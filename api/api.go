@@ -18,26 +18,19 @@ var Instance *API
 
 // API holds shared application modules for HTTP handlers.
 type API struct {
-	Auth        *module.Auth
-	Profile     *module.Profile
-	Setup       *module.Setup
-	Settings    *module.Settings
-	APIKey      *module.APIKey
-	Me          *module.Me
-	Workspace   *module.Workspace
-	Invite      *module.Invite
-	Access      *module.Access
-	Billing     *module.Billing
-	Stats       *module.Stats
-	Agent       *module.Agent
-	Instance    *module.Instance
-	Check       *module.Check
-	Identity    *module.Identity
-	Catalog     *module.Catalog
-	Integration *module.Integration
-	Event       *module.Event
-	KeyValue    *module.KeyValue
-	Chat        *module.Chat
+	Auth      *module.Auth
+	Profile   *module.Profile
+	Setup     *module.Setup
+	Settings  *module.Settings
+	APIKey    *module.APIKey
+	Me        *module.Me
+	Workspace *module.Workspace
+	Invite    *module.Invite
+	Access    *module.Access
+	Billing   *module.Billing
+	Stats     *module.Stats
+	Chat      *module.Chat
+	KeyValue  *module.KeyValue
 
 	GitHubOAuth *github.OAuth
 	GoogleOAuth *google.OAuth
@@ -62,37 +55,27 @@ func New() *API {
 	purchases := db.NewTokenPurchaseRepository(conn)
 	stats := db.NewWorkspaceStatsRepository(conn)
 	agents := db.NewAgentRepository(conn)
-	skills := db.NewAgentSkillRepository(conn)
 	instances := db.NewAgentInstanceRepository(conn)
 	healthChecks := db.NewHealthCheckRepository(conn)
 	agentChecks := db.NewAgentCheckRepository(conn)
-	identities := db.NewAgentIdentityRepository(conn)
-	identityTokens := db.NewAgentIdentityTokenRepository(conn)
 	integrations := db.NewIntegrationRepository(conn)
 	events := db.NewEventRepository(conn)
 	kv := db.NewWorkspaceKeyValueRepository(conn)
 	usage := db.NewUsageRepository(conn)
 
 	a := &API{
-		Auth:        module.NewAuth(users, sessions, configs),
-		Profile:     module.NewProfile(users),
-		Setup:       module.NewSetup(configs, users),
-		Settings:    module.NewSettings(configs),
-		APIKey:      module.NewAPIKey(apiKeys),
-		Me:          module.NewMe(apiKeys, users, accessKeys),
-		Workspace:   module.NewWorkspace(workspaces, workspaceUsers, subscriptions, users),
-		Invite:      module.NewInvite(invites, users, configs, workspaces, workspaceUsers, resend.NewMailer()),
-		Access:      module.NewAccess(accessKeys, workspaces),
-		Billing:     module.NewBilling(workspaces, subscriptions, purchases, module.Usage{}),
-		Stats:       module.NewStats(workspaces, stats),
-		Agent:       module.NewAgent(agents, instances, healthChecks, workspaces),
-		Instance:    module.NewInstance(agents, instances, healthChecks, agentChecks, workspaces),
-		Check:       module.NewCheck(agents, agentChecks, instances, healthChecks),
-		Identity:    module.NewIdentity(agents, identities, identityTokens),
-		Catalog:     module.NewCatalog(skills),
-		Integration: module.NewIntegration(integrations),
-		Event:       module.NewEvent(events),
-		KeyValue:    module.NewKeyValue(kv, workspaces),
+		Auth:      module.NewAuth(users, sessions, configs),
+		Profile:   module.NewProfile(users),
+		Setup:     module.NewSetup(configs, users),
+		Settings:  module.NewSettings(configs),
+		APIKey:    module.NewAPIKey(apiKeys),
+		Me:        module.NewMe(apiKeys, users, accessKeys),
+		Workspace: module.NewWorkspace(workspaces, workspaceUsers, subscriptions, users),
+		Invite:    module.NewInvite(invites, users, configs, workspaces, workspaceUsers, resend.NewMailer()),
+		Access:    module.NewAccess(accessKeys, workspaces),
+		Billing:   module.NewBilling(workspaces, subscriptions, purchases, module.Usage{}),
+		Stats:     module.NewStats(workspaces, stats),
+		KeyValue:  module.NewKeyValue(kv, workspaces),
 		Chat: module.NewChat(
 			db.NewChatRepository(conn),
 			workspaces,

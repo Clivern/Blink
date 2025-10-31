@@ -96,81 +96,11 @@ export const workspace_invite_api = {
   delete: (workspaceId, id) => api.delete(`/workspaces/${workspaceId}/invites/${id}`),
 }
 
-// API endpoints for workspace billing
-export const billing_api = {
-  status: (workspaceId) => api.get(`/workspaces/${workspaceId}/billing`),
-  usage: (workspaceId) => api.get(`/workspaces/${workspaceId}/billing/usage`),
-  checkout: (workspaceId, data) => api.post(`/workspaces/${workspaceId}/billing/checkout`, data),
-  portal: (workspaceId) => api.post(`/workspaces/${workspaceId}/billing/portal`),
-}
-
 // API endpoints for workspace access keys
 export const workspace_access_key_api = {
   list: (workspaceId, params) => api.get(`/workspaces/${workspaceId}/keys`, { params }),
   create: (workspaceId, data) => api.post(`/workspaces/${workspaceId}/keys`, data),
   delete: (workspaceId, id) => api.delete(`/workspaces/${workspaceId}/keys/${id}`),
-}
-
-// API endpoints for workspace agents
-export const agent_api = {
-  list: (workspaceId, params) => api.get(`/workspaces/${workspaceId}/agents`, { params }),
-  get: (workspaceId, name) =>
-    api.get(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}`),
-  upsert: (workspaceId, name, data) =>
-    api.put(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}`, data),
-  delete: (workspaceId, name) =>
-    api.delete(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}`),
-}
-
-// API endpoints for agent health checks
-export const agent_check_api = {
-  list: (workspaceId, name) =>
-    api.get(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/checks`),
-  upsert: (workspaceId, name, checkId, data) =>
-    api.put(
-      `/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/checks/${encodeURIComponent(checkId)}`,
-      data
-    ),
-  delete: (workspaceId, name, checkId) =>
-    api.delete(
-      `/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/checks/${encodeURIComponent(checkId)}`
-    ),
-}
-
-// API endpoints for agent identities
-export const agent_identity_api = {
-  list: (workspaceId, name) =>
-    api.get(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/identities`),
-  create: (workspaceId, name, data) =>
-    api.post(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/identities`, data),
-  update: (workspaceId, name, id, data) =>
-    api.put(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/identities/${id}`, data),
-  delete: (workspaceId, name, id) =>
-    api.delete(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/identities/${id}`),
-}
-
-// API endpoints for agent instances
-export const agent_instance_api = {
-  list: (workspaceId, name, params) =>
-    api.get(`/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/instances`, { params }),
-  delete: (workspaceId, name, instanceId) =>
-    api.delete(
-      `/workspaces/${workspaceId}/agents/${encodeURIComponent(name)}/instances/${encodeURIComponent(instanceId)}`
-    ),
-}
-
-// API endpoints for workspace event integrations
-export const integration_api = {
-  list: (workspaceId, params) => api.get(`/workspaces/${workspaceId}/integrations`, { params }),
-  create: (workspaceId, data) => api.post(`/workspaces/${workspaceId}/integrations`, data),
-  update: (workspaceId, id, data) => api.put(`/workspaces/${workspaceId}/integrations/${id}`, data),
-  delete: (workspaceId, id) => api.delete(`/workspaces/${workspaceId}/integrations/${id}`),
-}
-
-// API endpoints for workspace events
-export const event_api = {
-  list: (workspaceId, params) => api.get(`/workspaces/${workspaceId}/events`, { params }),
-  get: (workspaceId, id) => api.get(`/workspaces/${workspaceId}/events/${id}`),
 }
 
 // API endpoints for the current user's dashboard chats

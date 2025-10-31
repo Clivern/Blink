@@ -16,17 +16,6 @@
         </p>
       </header>
 
-      <section class="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="section bg-emerald-50/50">
-          <p class="mb-3 text-sm text-theme-textLight">{{ $t('dashboard.metrics_agents') }}</p>
-          <p v-if="agentsList === null" class="text-3xl font-normal text-theme-text">—</p>
-          <StatusBreakdown v-else :counts="healthCounts" class="mt-1" />
-          <p class="mt-2 text-xs text-theme-textLight">
-            {{ $t('dashboard.metrics_agents_sub', { total: agentsTotal ?? 0 }) }}
-          </p>
-        </div>
-      </section>
-
       <section class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div class="section overflow-hidden !p-0">
           <div class="border-b border-theme-border px-6 py-4">
@@ -96,8 +85,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppNav from '@/comp/AppNav.vue'
-import StatusBreakdown from '@/comp/StatusBreakdown.vue'
-import { agent_api, kv_api, workspace_access_key_api, workspace_invite_api } from '@/api'
+import { kv_api, workspace_access_key_api, workspace_invite_api } from '@/api'
 import { user } from '@/lib/auth'
 import { useWorkspaceContext } from '@/lib/permission'
 
@@ -105,33 +93,9 @@ const { t } = useI18n()
 
 const { currentWorkspace, canManage } = useWorkspaceContext()
 
-const agentsTotal = ref(null)
-const agentsList = ref(null)
 const accessKeysTotal = ref(null)
 const pendingInvites = ref(null)
 const kvTotal = ref(null)
-
-async function loadAgentHealth() {
-  try {
-    const loaded = []
-
-    for (;;) {
-      const res = await agent_api.list(currentWorkspace.id, {
-        limit: 100,
-        offset: loaded.length,
-      })
-      const page = res.data.agents || []
-      loaded.push(...page)
-
-      if (page.length < 100 || loaded.length >= (res.data._meta?.total || 0)) break
-    }
-
-    agentsTotal.value = loaded.length
-    agentsList.value = loaded
-  } catch (_) {
-    // Metrics stay blank when the agents cannot be read.
-  }
-}
 
 async function loadSetupSignals() {
   if (canManage.value) {
@@ -164,79 +128,21 @@ async function loadSetupSignals() {
   } catch (_) {
     // The knowledge check is skipped when the keys cannot be read.
   }
+
 }
 
 onMounted(() => {
-  loadAgentHealth()
   loadSetupSignals()
 })
 
-function instanceCount(agent) {
-  return Object.values(agent.statusCounts || {}).reduce((sum, count) => sum + count, 0)
-}
-
-function shortNames(list) {
-  const names = list.map((agent) => agent.name)
-
-  if (names.length <= 3) return names.join(', ')
-
-  return `${names.slice(0, 3).join(', ')} (+${names.length - 3})`
-}
-
-function agentsTarget(list) {
-  if (list.length === 1) return { name: 'Agent', params: { name: list[0].name } }
-
-  return { name: 'Agents' }
-}
-
 const attentionReady = computed(
   () =>
-    agentsList.value !== null &&
     kvTotal.value !== null &&
     (!canManage.value || (accessKeysTotal.value !== null && pendingInvites.value !== null))
 )
 
 const attentionItems = computed(() => {
   const items = []
-
-  if (agentsList.value) {
-    const critical = agentsList.value.filter((agent) => agent.health === 'critical')
-    const warning = agentsList.value.filter((agent) => agent.health === 'warning')
-    const idle = agentsList.value.filter((agent) => instanceCount(agent) === 0)
-
-    if (critical.length) {
-      items.push({
-        id: 'critical',
-        level: 'error',
-        title: t('dashboard.attention_critical_title'),
-        description: t('dashboard.attention_critical_desc', { names: shortNames(critical) }),
-        action: t('dashboard.attention_critical_action'),
-        to: agentsTarget(critical),
-      })
-    }
-
-    if (warning.length) {
-      items.push({
-        id: 'warning',
-        level: 'warn',
-        title: t('dashboard.attention_warning_title'),
-        description: t('dashboard.attention_warning_desc', { names: shortNames(warning) }),
-        action: t('dashboard.attention_warning_action'),
-        to: agentsTarget(warning),
-      })
-    }
-
-    if (idle.length) {
-      items.push({
-        id: 'idle',
-        level: 'warn',
-        title: t('dashboard.attention_no_instances_title'),
-        description: t('dashboard.attention_no_instances_desc', { names: shortNames(idle) }),
-        action: t('dashboard.attention_no_instances_action'),
-        to: agentsTarget(idle),
-      })
-    }
-  }
 
   if (canManage.value) {
     if (accessKeysTotal.value === 0) {
@@ -283,17 +189,6 @@ const attentionItems = computed(() => {
   }
 
   return items
-})
-
-const healthCounts = computed(() => {
-  const counts = { passing: 0, warning: 0, critical: 0, unknown: 0 }
-
-  for (const agent of agentsList.value || []) {
-    if (counts[agent.health] === undefined) counts.unknown++
-    else counts[agent.health]++
-  }
-
-  return counts
 })
 
 function attentionDotClass(level) {

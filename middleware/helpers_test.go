@@ -14,14 +14,9 @@ func TestUnitShouldSkipAuth(t *testing.T) {
 		path string
 		want bool
 	}{
-		{path: "/api/v1/public/oauth/token", want: true},
+		{path: "/api/v1/public/_health", want: true},
 		{path: "/assets/app.js", want: true},
-		{path: "/api/v1/workspaces/ws-1/agents/catalog/skills", want: true},
-		{path: "/api/v1/workspaces/ws-1/agents/catalog/skills/user.profile.get/agents", want: true},
-		{path: "/api/v1/workspaces/ws-1/agents/catalog/skills/user.profile.get", want: false},
-		{path: "/api/v1/workspaces/ws-1/agents/weather/instances", want: false},
-		{path: "/api/v1/workspaces/ws-1/agents/weather", want: false},
-		{path: "/api/v1/workspaces/ws-1/kv/a2a/flag", want: false},
+		{path: "/api/v1/workspaces/ws-1/invites", want: false},
 		{path: "/api/v1/me", want: false},
 	}
 

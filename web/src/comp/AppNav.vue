@@ -145,7 +145,6 @@ import {
   readStoredTheme,
 } from '@/lib/preferences'
 import { canManageWorkspace } from '@/lib/permission'
-import { isSaaS } from '@/lib/edition'
 import AppLogo from '@/comp/AppLogo.vue'
 
 const route = useRoute()
@@ -175,18 +174,11 @@ const canManageWorkspaceNav = computed(() => {
 const navItems = computed(() => {
   return [
     { to: '/dashboard', label: t('nav.dashboard') },
-    { to: '/agents', label: t('nav.agents') },
     { to: '/kv', label: t('nav.kv') },
-    { to: '/integrations', label: 'Integrations', requiresManage: true },
-    { to: '/events', label: t('nav.events'), requiresManage: true },
-    { to: '/billing', label: t('nav.billing'), requiresManage: true, requiresSaaS: true },
     { to: '/members', label: 'Members', requiresManage: true },
     { to: '/settings', label: t('nav.settings'), requiresManage: true },
     { to: '/workspaces', label: 'Workspaces' },
-  ].filter(
-    (item) =>
-      (!item.requiresManage || canManageWorkspaceNav.value) && (!item.requiresSaaS || isSaaS())
-  )
+  ].filter((item) => !item.requiresManage || canManageWorkspaceNav.value)
 })
 
 function isActive(path) {

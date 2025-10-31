@@ -1,1 +1,0 @@
-import{S as e,x as t}from"./runtime-core.esm-bundler-DMRe8GLm.js";function n(n,r=15e3){let i=null;function a(){o(),i=setInterval(n,r)}function o(){clearInterval(i),i=null}function s(){document.hidden?o():(n(),a())}e(()=>{a(),document.addEventListener(`visibilitychange`,s)}),t(()=>{o(),document.removeEventListener(`visibilitychange`,s)})}export{n as t};

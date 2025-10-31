@@ -55,16 +55,15 @@ func SetupServer(Static embed.FS, a *api.API) http.Handler {
 	})
 
 	r.Group(func(r chi.Router) { // public — no auth required
-		r.Get("/api/v1/public/_health", a.HealthAction)                                                              // liveness probe
-		r.Get("/api/v1/public/_ready", a.ReadyAction)                                                                // readiness probe (db, deps)
-		r.With(middleware.RateLimit(5, time.Minute)).Post("/api/v1/public/action/setup", a.SetupAction)              // initial app setup
-		r.Get("/api/v1/public/action/setup/status", a.SetupStatusAction)                                             // setup completion status
-		r.Post("/api/v1/public/action/logout", a.LogoutAction)                                                       // user logout
-		r.Get("/api/v1/public/action/oauth/github", a.GitHubOAuthStartAction)                                        // start GitHub OAuth
-		r.Get("/api/v1/public/action/oauth/github/callback", a.GitHubOAuthCallbackAction)                            // GitHub OAuth callback
-		r.Get("/api/v1/public/action/oauth/google", a.GoogleOAuthStartAction)                                        // start Google OAuth
-		r.Get("/api/v1/public/action/oauth/google/callback", a.GoogleOAuthCallbackAction)                            // Google OAuth callback
-		r.With(middleware.RateLimit(10, time.Minute)).Post("/api/v1/public/oauth/token", a.IssueIdentityTokenAction) // client credentials token for an agent identity
+		r.Get("/api/v1/public/_health", a.HealthAction)                                                 // liveness probe
+		r.Get("/api/v1/public/_ready", a.ReadyAction)                                                   // readiness probe (db, deps)
+		r.With(middleware.RateLimit(5, time.Minute)).Post("/api/v1/public/action/setup", a.SetupAction) // initial app setup
+		r.Get("/api/v1/public/action/setup/status", a.SetupStatusAction)                                // setup completion status
+		r.Post("/api/v1/public/action/logout", a.LogoutAction)                                          // user logout
+		r.Get("/api/v1/public/action/oauth/github", a.GitHubOAuthStartAction)                           // start GitHub OAuth
+		r.Get("/api/v1/public/action/oauth/github/callback", a.GitHubOAuthCallbackAction)               // GitHub OAuth callback
+		r.Get("/api/v1/public/action/oauth/google", a.GoogleOAuthStartAction)                           // start Google OAuth
+		r.Get("/api/v1/public/action/oauth/google/callback", a.GoogleOAuthCallbackAction)               // Google OAuth callback
 		if conf.IsSaaS() {
 			r.Post("/api/v1/public/action/stripe/webhook", a.StripeWebhookAction) // Stripe billing webhook
 		}
@@ -126,52 +125,6 @@ func SetupServer(Static embed.FS, a *api.API) http.Handler {
 			r.With(middleware.Protect(middleware.Config{Perm: module.CanUpdateWorkspaceBilling})).Post("/billing/checkout", a.CreateBillingCheckoutAction) // start Stripe checkout
 			r.With(middleware.Protect(middleware.Config{Perm: module.CanUpdateWorkspaceBilling})).Post("/billing/portal", a.CreateBillingPortalAction)     // open Stripe customer portal
 		}
-
-		r.Route("/agents", func(r chi.Router) {
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanListAgents})).Get("/", a.ListAgentsAction)                 // list agents
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanUpsertAgent})).Put("/{agentName}", a.UpsertAgentAction)    // register or replace an agent card
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanGetAgent})).Get("/{agentName}", a.GetAgentAction)          // get an agent
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanDeleteAgent})).Delete("/{agentName}", a.DeleteAgentAction) // delete an agent
-			r.With(middleware.AgentAuth()).Get("/catalog/skills", a.ListCatalogSkillsAction)                                       // list the skills the calling agent may call
-			r.With(middleware.AgentAuth()).Get("/catalog/skills/{skill}/agents", a.ListCatalogSkillAgentsAction)                   // list the agents the calling agent may call for a skill
-
-			r.Route("/{agentName}/instances", func(r chi.Router) {
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanListInstances})).Get("/", a.ListInstancesAction)                              // list agent instances
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanGetInstance})).Get("/{instanceId}", a.GetInstanceAction)                      // get an agent instance
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanRegisterInstance})).Put("/{instanceId}", a.RegisterInstanceAction)            // register or update an instance
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanRegisterInstance})).Delete("/{instanceId}", a.DeregisterInstanceAction)       // deregister an instance
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanReportCheck})).Post("/{instanceId}/checks/{checkId}/pass", a.PassCheckAction) // report a ttl check passing
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanReportCheck})).Post("/{instanceId}/checks/{checkId}/warn", a.WarnCheckAction) // report a ttl check warning
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanReportCheck})).Post("/{instanceId}/checks/{checkId}/fail", a.FailCheckAction) // report a ttl check critical
-			})
-
-			r.Route("/{agentName}/checks", func(r chi.Router) {
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanGetAgent})).Get("/", a.ListAgentChecksAction)                 // list health check templates
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanUpsertAgent})).Put("/{checkId}", a.UpsertAgentCheckAction)    // create or replace a health check template
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanUpsertAgent})).Delete("/{checkId}", a.DeleteAgentCheckAction) // delete a health check template
-			})
-
-			r.Route("/{agentName}/identities", func(r chi.Router) {
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanGetAgent})).Get("/", a.ListIdentitiesAction)                   // list agent identities
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanUpsertAgent})).Post("/", a.CreateIdentityAction)               // issue an agent identity
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanUpsertAgent})).Put("/{identityId}", a.UpdateIdentityAction)    // rename or toggle an agent identity
-				r.With(middleware.Protect(middleware.Config{Perm: module.CanUpsertAgent})).Delete("/{identityId}", a.DeleteIdentityAction) // revoke an agent identity
-			})
-
-		})
-
-		r.Route("/integrations", func(r chi.Router) {
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanListIntegrations})).Get("/", a.ListIntegrationsAction)                     // list event integrations
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanCreateIntegration})).Post("/", a.CreateIntegrationAction)                  // create an integration
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanGetIntegration})).Get("/{integrationId}", a.GetIntegrationAction)          // get an integration
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanUpdateIntegration})).Put("/{integrationId}", a.UpdateIntegrationAction)    // update an integration
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanDeleteIntegration})).Delete("/{integrationId}", a.DeleteIntegrationAction) // delete an integration
-		})
-
-		r.Route("/events", func(r chi.Router) {
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanListEvents})).Get("/", a.ListEventsAction)      // list workspace events
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanGetEvent})).Get("/{eventId}", a.GetEventAction) // get a workspace event
-		})
 
 		r.Route("/kv", func(r chi.Router) {
 			r.With(middleware.Protect(middleware.Config{Perm: module.CanListKeyValue})).Get("/", a.ListKeyValueAction)         // list workspace keys
