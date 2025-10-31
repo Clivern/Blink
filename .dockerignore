@@ -1,0 +1,12 @@
+.git
+.DS_Store
+
+blink
+*.db
+*.out
+*.test
+coverage.html
+
+web/node_modules
+
+bin

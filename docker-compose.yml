@@ -1,0 +1,84 @@
+name: blink
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-blink}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d blink"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  nats:
+    image: nats:2-alpine
+    restart: unless-stopped
+
+  migrate:
+    image: ${BLINK_IMAGE:-registry.digitalocean.com/blink/blink:main}
+    restart: "no"
+    command: ["migrate", "up", "-c", "/app/configs/config.yml"]
+    environment:
+      BLINK_SERVER_URL: ${BLINK_SERVER_URL:-http://localhost}
+      BLINK_DATABASE_HOST: postgres
+      BLINK_DATABASE_PORT: "5432"
+      BLINK_DATABASE_USERNAME: ${POSTGRES_USER:-postgres}
+      BLINK_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      BLINK_DATABASE_NAME: ${POSTGRES_DB:-blink}
+    volumes:
+      - ./etc/config/config.yml:/app/configs/config.yml:ro
+      - blink_data:/app/var
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  blink:
+    image: ${BLINK_IMAGE:-registry.digitalocean.com/blink/blink:main}
+    restart: unless-stopped
+    command: ["server", "-c", "/app/configs/config.yml"]
+    environment:
+      BLINK_SERVER_URL: ${BLINK_SERVER_URL:-http://localhost}
+      BLINK_DATABASE_HOST: postgres
+      BLINK_DATABASE_PORT: "5432"
+      BLINK_DATABASE_USERNAME: ${POSTGRES_USER:-postgres}
+      BLINK_DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      BLINK_DATABASE_NAME: ${POSTGRES_DB:-blink}
+      BLINK_BROKER_URL: nats://nats:4222
+      BLINK_AI_PROVIDER: ${BLINK_AI_PROVIDER:-openrouter}
+      BLINK_AI_API_KEY: ${BLINK_AI_API_KEY:-}
+      BLINK_AI_CHAT_MODEL: ${BLINK_AI_CHAT_MODEL:-openai/gpt-4o}
+      BLINK_RESEND_API_KEY: ${BLINK_RESEND_API_KEY:-}
+      BLINK_STRIPE_SECRET_KEY: ${BLINK_STRIPE_SECRET_KEY:-}
+      BLINK_STRIPE_WEBHOOK_SECRET: ${BLINK_STRIPE_WEBHOOK_SECRET:-}
+    volumes:
+      - ./etc/config/config.yml:/app/configs/config.yml:ro
+      - blink_data:/app/var
+    expose:
+      - "8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+    volumes:
+      - ./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - blink
+
+volumes:
+  postgres_data:
+  blink_data:
