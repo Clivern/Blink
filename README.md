@@ -1,7 +1,7 @@
 <p align="center">
     <img alt="Blink Logo" src="/static/logo-basket.svg?v=0.1.0" width="180" />
     <h3 align="center">Blink</h3>
-    <p align="center">A platform for ordering from local stores with fast delivery.</p>
+    <p align="center">A Platform for Ordering from Local Stores with Fast Delivery.</p>
     <p align="center">
         <a href="https://github.com/clivern/blink/actions/workflows/ci.yml">
             <img alt="CI" src="https://github.com/clivern/blink/actions/workflows/ci.yml/badge.svg">
@@ -15,7 +15,7 @@
     </p>
 </p>
 
-Blink is a grocery platform: local stores list their catalog, shoppers order from the dashboard or the mobile app!
+Blink is a grocery platform, local stores list their catalog, shoppers order from the dashboard or the mobile app!
 
 
 ### Versioning
