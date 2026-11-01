@@ -72,12 +72,10 @@ app:
       portal_return: ${BLINK_STRIPE_PORTAL_RETURN_URL:-/billing}
 
   ai:
-    # openrouter or muse
+    # openrouter
     provider: ${BLINK_AI_PROVIDER:-openrouter}
     api_key: ${BLINK_AI_API_KEY:-}
     chat_model: ${BLINK_AI_CHAT_MODEL:-openai/gpt-4o}
-    # muse only: minimal, low, medium, high, xhigh or max; higher thinks longer before answering
-    reasoning_effort: ${BLINK_AI_REASONING_EFFORT:-minimal}
   cache:
     provider: ${BLINK_CACHE_PROVIDER:-redis}
     redis:

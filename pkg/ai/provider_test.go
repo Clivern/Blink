@@ -16,10 +16,4 @@ func TestUnitProvider(t *testing.T) {
 
 		assert.IsType(t, &OpenRouterChat{}, NewChatClient())
 	})
-
-	t.Run("muse", func(t *testing.T) {
-		viper.Set("app.ai.provider", ProviderMuse)
-
-		assert.IsType(t, &MuseChat{}, NewChatClient())
-	})
 }

@@ -4,15 +4,11 @@
 package ai
 
 import (
-	"github.com/clivern/blink/pkg/ai/muse"
 	"github.com/clivern/blink/pkg/ai/openrouter"
 	"github.com/spf13/viper"
 )
 
-const (
-	ProviderOpenRouter = "openrouter"
-	ProviderMuse       = "muse"
-)
+const ProviderOpenRouter = "openrouter"
 
 // IsConfigured reports whether an AI provider API key is set.
 func IsConfigured() bool {
@@ -23,14 +19,6 @@ func IsConfigured() bool {
 func NewChatClient() ChatClient {
 	apiKey := viper.GetString("app.ai.api_key")
 	model := viper.GetString("app.ai.chat_model")
-
-	if viper.GetString("app.ai.provider") == ProviderMuse {
-		return NewMuseChat(muse.New(muse.Config{
-			APIKey: apiKey,
-			Model:  model,
-			Effort: viper.GetString("app.ai.reasoning_effort"),
-		}))
-	}
 
 	return NewOpenRouterChat(openrouter.New(openrouter.Config{APIKey: apiKey, Model: model}))
 }

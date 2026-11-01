@@ -38,7 +38,7 @@ func TestIntegrationChatRepository(t *testing.T) {
 
 	t.Run("messages keep their order", func(t *testing.T) {
 		require.NoError(t, repo.CreateMessage(&ChatMessage{ChatId: chat.Id, Kind: ChatMessageKindUser, Content: "Which agents do I have?"}))
-		require.NoError(t, repo.CreateMessage(&ChatMessage{ChatId: chat.Id, Kind: ChatMessageKindAssistant, Content: "You have one agent, users.", Meta: stringPtr(`{"model": "muse-wonder-1.0"}`)}))
+		require.NoError(t, repo.CreateMessage(&ChatMessage{ChatId: chat.Id, Kind: ChatMessageKindAssistant, Content: "You have one agent, users.", Meta: stringPtr(`{"model": "openai/gpt-4o"}`)}))
 
 		messages, err := repo.ListMessages(chat.Id)
 		require.NoError(t, err)
@@ -46,7 +46,7 @@ func TestIntegrationChatRepository(t *testing.T) {
 		assert.Equal(t, ChatMessageKindUser, messages[0].Kind)
 		assert.Nil(t, messages[0].Meta)
 		assert.Equal(t, "You have one agent, users.", messages[1].Content)
-		assert.JSONEq(t, `{"model": "muse-wonder-1.0"}`, *messages[1].Meta)
+		assert.JSONEq(t, `{"model": "openai/gpt-4o"}`, *messages[1].Meta)
 	})
 
 	t.Run("list shows the latest message as preview", func(t *testing.T) {
