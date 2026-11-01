@@ -1,0 +1,19 @@
+{
+  "name": "blink-mobile",
+  "version": "0.1.0",
+  "description": "Blink mobile app (React Native / Expo)",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "~58.0.22",
+    "expo-status-bar": "~58.0.4",
+    "react": "19.3.0",
+    "react-native": "0.88.1"
+  },
+  "private": true
+}
