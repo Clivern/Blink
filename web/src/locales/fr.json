@@ -17,9 +17,10 @@
   },
   "login": {
     "title": "Bon retour",
-    "subtitle": "Connectez-vous avec GitHub ou Google pour continuer.",
+    "subtitle": "Connectez-vous avec GitHub, Google ou Facebook pour continuer.",
     "continue_github": "Continuer avec GitHub",
     "continue_google": "Continuer avec Google",
+    "continue_facebook": "Continuer avec Facebook",
     "oauth_failed": "La connexion a échoué. Veuillez réessayer.",
     "submitting": "Redirection…"
   },

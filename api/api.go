@@ -6,6 +6,7 @@ package api
 import (
 	"github.com/clivern/blink/db"
 	"github.com/clivern/blink/module"
+	"github.com/clivern/blink/pkg/fb"
 	"github.com/clivern/blink/pkg/github"
 	"github.com/clivern/blink/pkg/google"
 	"github.com/clivern/blink/pkg/resend"
@@ -32,8 +33,9 @@ type API struct {
 	Chat      *module.Chat
 	KeyValue  *module.KeyValue
 
-	GitHubOAuth *github.OAuth
-	GoogleOAuth *google.OAuth
+	GitHubOAuth   *github.OAuth
+	GoogleOAuth   *google.OAuth
+	FacebookOAuth *fb.OAuth
 
 	WorkspaceUsers db.WorkspaceUserRepository
 	Usage          db.UsageRepository
@@ -100,6 +102,12 @@ func New() *API {
 			ClientSecret: viper.GetString("app.oauth.google.client_secret"),
 			RedirectURL:  viper.GetString("app.oauth.google.redirect_url"),
 			Scopes:       []string{"openid", "email", "profile"},
+		}),
+		FacebookOAuth: fb.NewOAuth(fb.OAuthConfig{
+			ClientID:     viper.GetString("app.oauth.facebook.client_id"),
+			ClientSecret: viper.GetString("app.oauth.facebook.client_secret"),
+			RedirectURL:  viper.GetString("app.oauth.facebook.redirect_url"),
+			Scopes:       []string{"email", "public_profile"},
 		}),
 		WorkspaceUsers: workspaceUsers,
 		Usage:          usage,

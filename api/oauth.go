@@ -192,3 +192,85 @@ func (a *API) GoogleOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 
 	http.Redirect(w, r, util.AppURL("/login?oauth=google"), http.StatusFound)
 }
+
+// FacebookOAuthStartAction redirects the browser to Facebook's authorize URL.
+func (a *API) FacebookOAuthStartAction(w http.ResponseWriter, r *http.Request) {
+	state, err := util.GenerateSecureToken(24)
+	if err != nil {
+		log.Error().
+			Err(err).
+			Msg("Failed to generate oauth state")
+		http.Redirect(w, r, util.AppURL("/login?oauth_error=facebook"), http.StatusFound)
+		return
+	}
+
+	authorizeURL := a.FacebookOAuth.AuthorizeURL(state)
+
+	opts := lo.Ternary(
+		strings.HasPrefix(util.AppURL(""), "https://"),
+		util.SecureCookieOptions(),
+		util.DefaultCookieOptions(),
+	)
+	opts.SameSite = http.SameSiteLaxMode
+	opts.MaxAge = int((10 * time.Minute) / time.Second)
+	util.SetCookie(w, OauthStateCookie, state, opts)
+
+	http.Redirect(w, r, authorizeURL, http.StatusFound)
+}
+
+// FacebookOAuthCallbackAction completes Facebook OAuth and creates a session.
+func (a *API) FacebookOAuthCallbackAction(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
+	state := r.URL.Query().Get("state")
+	expectedState := util.GetCookie(r, OauthStateCookie)
+
+	util.DeleteCookie(w, OauthStateCookie)
+
+	token, err := a.FacebookOAuth.Exchange(r.Context(), code, state, expectedState)
+	if err != nil {
+		log.Error().
+			Err(err).
+			Msg("Facebook oauth exchange failed")
+		http.Redirect(w, r, util.AppURL("/login?oauth_error=facebook"), http.StatusFound)
+		return
+	}
+
+	user, err := a.FacebookOAuth.User(r.Context(), token.AccessToken)
+	if err != nil {
+		log.Error().
+			Err(err).
+			Msg("Facebook oauth user fetch failed")
+		http.Redirect(w, r, util.AppURL("/login?oauth_error=facebook"), http.StatusFound)
+		return
+	}
+
+	result, err := a.Auth.LoginWithOAuth(r.Context(), &module.OAuthIdentity{
+		Provider:       db.UserProviderFacebook,
+		ProviderUserID: user.ID,
+		Email:          user.Email,
+		Name: lo.Ternary(
+			lo.IsNotEmpty(user.Name),
+			user.Name,
+			user.Email,
+		),
+	})
+	if err != nil {
+		log.Error().
+			Err(err).
+			Msg("Facebook oauth login failed")
+		http.Redirect(w, r, util.AppURL("/login?oauth_error=facebook"), http.StatusFound)
+		return
+	}
+
+	util.SetCookie(w, "_blink_session", result.Session.Token, result.CookieOptions)
+
+	err = a.Invite.AttachPending(result.User)
+	if err != nil {
+		log.Error().
+			Err(err).
+			Str("userId", result.User.Id.String()).
+			Msg("Failed to attach pending workspace invites")
+	}
+
+	http.Redirect(w, r, util.AppURL("/login?oauth=facebook"), http.StatusFound)
+}

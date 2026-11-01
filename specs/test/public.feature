@@ -11,8 +11,8 @@ Feature: Public routes
     GET  /api/v1/public/action/setup/status
     POST /api/v1/public/action/setup
     POST /api/v1/public/action/logout
-    GET  /api/v1/public/action/oauth/{github|google}
-    GET  /api/v1/public/action/oauth/{github|google}/callback
+    GET  /api/v1/public/action/oauth/{github|google|facebook}
+    GET  /api/v1/public/action/oauth/{github|google|facebook}/callback
     GET  /api/v1/public/_metrics
 
   Note: do not follow redirects in this file; check the 302 and its Location.
@@ -90,6 +90,7 @@ Feature: Public routes
       | provider | host                      |
       | github   | github.com                |
       | google   | accounts.google.com       |
+      | facebook | facebook.com              |
 
   @readonly
   Scenario Outline: A callback with a forged state never signs anyone in
@@ -103,6 +104,7 @@ Feature: Public routes
       | provider |
       | github   |
       | google   |
+      | facebook |
 
   # ---------------------------------------------------------------------------
   # Metrics

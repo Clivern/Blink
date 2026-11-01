@@ -34,6 +34,10 @@ app:
       client_id: ${BLINK_GOOGLE_OAUTH_CLIENT_ID:-}
       client_secret: ${BLINK_GOOGLE_OAUTH_CLIENT_SECRET:-}
       redirect_url: ${BLINK_GOOGLE_OAUTH_REDIRECT_URL:-}
+    facebook:
+      client_id: ${BLINK_FACEBOOK_OAUTH_CLIENT_ID:-}
+      client_secret: ${BLINK_FACEBOOK_OAUTH_CLIENT_SECRET:-}
+      redirect_url: ${BLINK_FACEBOOK_OAUTH_REDIRECT_URL:-}
 
   database:
     rw:

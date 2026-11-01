@@ -17,9 +17,10 @@
   },
   "login": {
     "title": "Welcome back",
-    "subtitle": "Sign in with GitHub or Google to continue.",
+    "subtitle": "Sign in with GitHub, Google, or Facebook to continue.",
     "continue_github": "Continue with GitHub",
     "continue_google": "Continue with Google",
+    "continue_facebook": "Continue with Facebook",
     "oauth_failed": "Sign-in failed. Please try again.",
     "submitting": "Redirecting…"
   },

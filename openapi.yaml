@@ -186,6 +186,37 @@ paths:
         "302":
           description: Redirect to app with session cookie set
 
+  /api/v1/public/action/oauth/facebook:
+    get:
+      tags: [Public]
+      summary: Start Facebook OAuth
+      security: []
+      responses:
+        "302":
+          description: Redirect to Facebook
+
+  /api/v1/public/action/oauth/facebook/callback:
+    get:
+      tags: [Public]
+      summary: Facebook OAuth callback
+      security: []
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Authorization code from Facebook
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Must match the state cookie set when the flow started
+      responses:
+        "302":
+          description: Redirect to app with session cookie set
+
   /api/v1/public/action/stripe/webhook:
     post:
       tags: [Billing]

@@ -12,21 +12,22 @@ import (
 
 // User role and provider constants
 const (
-	UserRoleAdmin      = "admin"
-	UserRoleRegular    = "regular"
-	UserRoleOwner      = "owner"
-	UserRoleReadOnly   = "readonly"
-	UserRoleBot        = "bot"
-	UserProviderLocal  = "local"
-	UserProviderGithub = "github"
-	UserProviderGoogle = "google"
-	UserLanguageEN     = "en"
-	UserLanguageFR     = "fr"
-	UserThemeDefault   = "default"
-	UserThemeBlue      = "blue"
-	UserThemeSlate     = "slate"
-	UserThemeEmerald   = "emerald"
-	UserThemeDark      = "dark"
+	UserRoleAdmin        = "admin"
+	UserRoleRegular      = "regular"
+	UserRoleOwner        = "owner"
+	UserRoleReadOnly     = "readonly"
+	UserRoleBot          = "bot"
+	UserProviderLocal    = "local"
+	UserProviderGithub   = "github"
+	UserProviderGoogle   = "google"
+	UserProviderFacebook = "facebook"
+	UserLanguageEN       = "en"
+	UserLanguageFR       = "fr"
+	UserThemeDefault     = "default"
+	UserThemeBlue        = "blue"
+	UserThemeSlate       = "slate"
+	UserThemeEmerald     = "emerald"
+	UserThemeDark        = "dark"
 )
 
 // BotUserId is the ID of the platform bot user.
