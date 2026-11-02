@@ -452,7 +452,7 @@ import { playReply, playSend } from '@/lib/sound'
 import { plainText, renderMarkdown } from '@/lib/markdown'
 import { formatTimestamp, formatRelative } from '@/utils/date'
 
-const SUGGESTIONS = ['suggestion_agents', 'suggestion_health', 'suggestion_workspace']
+const SUGGESTIONS = ['suggestion_keys', 'suggestion_integrations', 'suggestion_workspace']
 const GREETING_DOTS_MS = 400
 const GREETING_LETTER_MS = 10
 const POLL_MS = 1500

@@ -29,8 +29,6 @@ type ChatToolRun func(workspaceId, userId db.Id, args map[string]string) (any, e
 // ChatTools are the modules the dashboard tools read from.
 type ChatTools struct {
 	Workspace   *Workspace
-	Agent       *Agent
-	Instance    *Instance
 	KeyValue    *KeyValue
 	Event       *Event
 	Integration *Integration
@@ -38,11 +36,8 @@ type ChatTools struct {
 
 // ChatWorkspaceSummary is the workspace with counters of what it holds, for questions about the workspace.
 type ChatWorkspaceSummary struct {
-	Workspace         *WorkspaceResponse `json:"workspace"`
-	Agents            int64              `json:"agents"`
-	AgentsByHealth    map[string]int     `json:"agentsByHealth"`
-	InstancesByStatus map[string]int     `json:"instancesByStatus"`
-	KeyValues         int64              `json:"kvKeys"`
+	Workspace *WorkspaceResponse `json:"workspace"`
+	KeyValues int64              `json:"kvKeys"`
 }
 
 // ChatIntegration is an integration without its URL, site or index
@@ -57,16 +52,12 @@ type ChatIntegration struct {
 // NewChatTools returns the dashboard tools backed by modules.
 func NewChatTools(
 	workspace *Workspace,
-	agent *Agent,
-	instance *Instance,
 	keyValue *KeyValue,
 	event *Event,
 	integration *Integration,
 ) *ChatTools {
 	return &ChatTools{
 		Workspace:   workspace,
-		Agent:       agent,
-		Instance:    instance,
 		KeyValue:    keyValue,
 		Event:       event,
 		Integration: integration,
@@ -77,37 +68,16 @@ func NewChatTools(
 func (t *ChatTools) List() []*ChatTool {
 	return []*ChatTool{
 		{
-			Name: "get_workspace",
-			Description: "Get this workspace's name, id, handle, member count and the user's own role, with counts of " +
-				"agents by health, instances by status and KV keys.",
-			Permission: CanGetWorkspace,
-			Run:        t.WorkspaceSummary,
+			Name:        "get_workspace",
+			Description: "Get this workspace's name, id, handle, member count and the user's own role, with the KV key count.",
+			Permission:  CanGetWorkspace,
+			Run:         t.WorkspaceSummary,
 		},
 		{
 			Name:        "list_members",
 			Description: "List the workspace members with their name, email and role.",
 			Permission:  CanListWorkspaceMembers,
 			Run:         t.ListMembers,
-		},
-		{
-			Name:        "list_agents",
-			Description: "List the agents registered in the workspace with their version and health.",
-			Permission:  CanListAgents,
-			Run:         t.ListAgents,
-		},
-		{
-			Name:        "get_agent",
-			Description: "Get one agent with its card, skills and health.",
-			Arguments:   map[string]string{"name": "agent name"},
-			Permission:  CanGetAgent,
-			Run:         t.GetAgent,
-		},
-		{
-			Name:        "list_instances",
-			Description: "List the running instances of an agent with their health checks.",
-			Arguments:   map[string]string{"agent": "agent name"},
-			Permission:  CanListInstances,
-			Run:         t.ListInstances,
 		},
 		{
 			Name:        "list_kv",
@@ -124,21 +94,16 @@ func (t *ChatTools) List() []*ChatTool {
 		},
 		{
 			Name:        "list_events",
-			Description: "List the latest workspace events such as health changes and catalog changes.",
+			Description: "List the latest workspace events.",
 			Permission:  CanListEvents,
 			Run:         t.ListEvents,
 		},
 	}
 }
 
-// WorkspaceSummary returns the workspace with counters of its agents, instances and KV keys.
+// WorkspaceSummary returns the workspace with its KV key count.
 func (t *ChatTools) WorkspaceSummary(workspaceId, userId db.Id, _ map[string]string) (any, error) {
 	workspace, err := t.Workspace.GetWorkspace(workspaceId, &db.User{Id: userId})
-	if err != nil {
-		return nil, err
-	}
-
-	agents, err := t.Agent.ListAgents(workspaceId, ChatSummaryLimit, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -149,18 +114,8 @@ func (t *ChatTools) WorkspaceSummary(workspaceId, userId db.Id, _ map[string]str
 	}
 
 	summary := &ChatWorkspaceSummary{
-		Workspace:         workspace,
-		Agents:            agents.Total,
-		AgentsByHealth:    map[string]int{},
-		InstancesByStatus: map[string]int{},
-		KeyValues:         keyValues.Total,
-	}
-
-	for _, agent := range agents.Agents {
-		summary.AgentsByHealth[agent.Health]++
-		for status, count := range agent.StatusCounts {
-			summary.InstancesByStatus[status] += count
-		}
+		Workspace: workspace,
+		KeyValues: keyValues.Total,
 	}
 
 	return summary, nil
@@ -169,21 +124,6 @@ func (t *ChatTools) WorkspaceSummary(workspaceId, userId db.Id, _ map[string]str
 // ListMembers returns the workspace members with their name, email and role.
 func (t *ChatTools) ListMembers(workspaceId, _ db.Id, _ map[string]string) (any, error) {
 	return t.Workspace.ListWorkspaceMembers(workspaceId, ChatToolLimit, 0)
-}
-
-// ListAgents returns the workspace agents with their version and health.
-func (t *ChatTools) ListAgents(workspaceId, _ db.Id, _ map[string]string) (any, error) {
-	return t.Agent.ListAgents(workspaceId, ChatToolLimit, 0)
-}
-
-// GetAgent returns one agent, named by the name argument, with its card, skills and health.
-func (t *ChatTools) GetAgent(workspaceId, _ db.Id, args map[string]string) (any, error) {
-	return t.Agent.GetAgent(workspaceId, args["name"])
-}
-
-// ListInstances returns the instances of the agent named by the agent argument with their health checks.
-func (t *ChatTools) ListInstances(workspaceId, _ db.Id, args map[string]string) (any, error) {
-	return t.Instance.ListInstances(workspaceId, args["agent"], ChatToolLimit, 0)
 }
 
 // ListKeyValue returns the workspace keys, under the prefix argument when given.

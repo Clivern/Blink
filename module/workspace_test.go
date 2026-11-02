@@ -16,12 +16,11 @@ import (
 func TestUnitWorkspace(t *testing.T) {
 	owner := &db.User{Id: "user-1"}
 
-	t.Run("create makes the user owner and adds a subscription", func(t *testing.T) {
+	t.Run("create makes the user owner", func(t *testing.T) {
 		workspaces := &fakeWorkspaces{}
 		members := &fakeWorkspaceUsers{total: 1}
-		subscriptions := &fakeSubscriptions{}
 
-		response, err := newWorkspaceModule(workspaces, members, subscriptions).
+		response, err := newWorkspaceModule(workspaces, members).
 			CreateWorkspace(&CreateWorkspaceRequest{Name: "Acme"}, owner)
 		require.NoError(t, err)
 		require.Len(t, workspaces.created, 1)
@@ -32,15 +31,13 @@ func TestUnitWorkspace(t *testing.T) {
 		require.Len(t, members.created, 1)
 		assert.Equal(t, db.UserRoleOwner, members.created[0].Role)
 		assert.Equal(t, db.Id("user-1"), members.created[0].UserId)
-
-		require.Len(t, subscriptions.created, 1)
 	})
 
 	t.Run("create returns the repository error", func(t *testing.T) {
 		workspaces := &fakeWorkspaces{}
 		members := &fakeWorkspaceUsers{err: errors.New("boom")}
 
-		_, err := newWorkspaceModule(workspaces, members, &fakeSubscriptions{}).
+		_, err := newWorkspaceModule(workspaces, members).
 			CreateWorkspace(&CreateWorkspaceRequest{Name: "Acme"}, owner)
 		assert.EqualError(t, err, "boom")
 	})
@@ -52,7 +49,7 @@ func TestUnitWorkspace(t *testing.T) {
 			membership: &db.WorkspaceUser{Role: db.UserRoleAdmin},
 		}
 
-		result, err := newWorkspaceModule(workspaces, &fakeWorkspaceUsers{total: 2}, &fakeSubscriptions{}).
+		result, err := newWorkspaceModule(workspaces, &fakeWorkspaceUsers{total: 2}).
 			ListWorkspaces(owner, 20, 0)
 		require.NoError(t, err)
 		assert.Equal(t, int64(1), result.Total)
@@ -62,7 +59,7 @@ func TestUnitWorkspace(t *testing.T) {
 	})
 
 	t.Run("get returns not found for a missing workspace", func(t *testing.T) {
-		_, err := newWorkspaceModule(&fakeWorkspaces{}, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+		_, err := newWorkspaceModule(&fakeWorkspaces{}, &fakeWorkspaceUsers{}).
 			GetWorkspace("ws-1", owner)
 		assert.ErrorIs(t, err, ErrWorkspaceNotFound)
 	})
@@ -70,7 +67,7 @@ func TestUnitWorkspace(t *testing.T) {
 	t.Run("get returns an empty role for a non-member", func(t *testing.T) {
 		workspaces := &fakeWorkspaces{workspace: &db.Workspace{Id: "ws-1", Name: "Acme"}}
 
-		response, err := newWorkspaceModule(workspaces, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+		response, err := newWorkspaceModule(workspaces, &fakeWorkspaceUsers{}).
 			GetWorkspace("ws-1", owner)
 		require.NoError(t, err)
 		assert.Equal(t, "", response.Role)
@@ -78,7 +75,7 @@ func TestUnitWorkspace(t *testing.T) {
 	})
 
 	t.Run("update returns not found for a missing workspace", func(t *testing.T) {
-		_, err := newWorkspaceModule(&fakeWorkspaces{}, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+		_, err := newWorkspaceModule(&fakeWorkspaces{}, &fakeWorkspaceUsers{}).
 			UpdateWorkspace("ws-1", &UpdateWorkspaceRequest{Name: "Renamed"}, owner)
 		assert.ErrorIs(t, err, ErrWorkspaceNotFound)
 	})
@@ -89,7 +86,7 @@ func TestUnitWorkspace(t *testing.T) {
 			membership: &db.WorkspaceUser{Role: db.UserRoleOwner},
 		}
 
-		response, err := newWorkspaceModule(workspaces, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+		response, err := newWorkspaceModule(workspaces, &fakeWorkspaceUsers{}).
 			UpdateWorkspace("ws-1", &UpdateWorkspaceRequest{Name: "Renamed"}, owner)
 		require.NoError(t, err)
 		require.Len(t, workspaces.updated, 1)
@@ -102,7 +99,7 @@ func TestUnitWorkspace(t *testing.T) {
 
 		require.NoError(
 			t,
-			newWorkspaceModule(workspaces, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+			newWorkspaceModule(workspaces, &fakeWorkspaceUsers{}).
 				DeleteWorkspace("ws-1"),
 		)
 		assert.Equal(t, []db.Id{"ws-1"}, workspaces.deleted)

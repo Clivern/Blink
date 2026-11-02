@@ -66,9 +66,6 @@ func SetupServer(Static embed.FS, a *api.API) http.Handler {
 		r.Get("/api/v1/public/action/oauth/google/callback", a.GoogleOAuthCallbackAction)               // Google OAuth callback
 		r.Get("/api/v1/public/action/oauth/facebook", a.FacebookOAuthStartAction)                       // start Facebook OAuth
 		r.Get("/api/v1/public/action/oauth/facebook/callback", a.FacebookOAuthCallbackAction)           // Facebook OAuth callback
-		if conf.IsSaaS() {
-			r.Post("/api/v1/public/action/stripe/webhook", a.StripeWebhookAction) // Stripe billing webhook
-		}
 	})
 	r.Get("/api/v1/me", a.GetMeAction) // current authenticated user
 	r.Group(func(r chi.Router) {       // user profile
@@ -120,13 +117,6 @@ func SetupServer(Static embed.FS, a *api.API) http.Handler {
 			r.With(middleware.Protect(middleware.Config{Perm: module.CanGetAccessKey})).Get("/{keyId}", a.GetAccessKeyAction)          // get workspace access key
 			r.With(middleware.Protect(middleware.Config{Perm: module.CanDeleteAccessKey})).Delete("/{keyId}", a.DeleteAccessKeyAction) // delete workspace access key
 		})
-
-		if conf.IsSaaS() {
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanGetWorkspaceBilling})).Get("/billing", a.GetBillingStatusAction)                   // get billing status
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanGetWorkspaceBilling})).Get("/billing/usage", a.GetBillingUsageAction)              // get billing usage
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanUpdateWorkspaceBilling})).Post("/billing/checkout", a.CreateBillingCheckoutAction) // start Stripe checkout
-			r.With(middleware.Protect(middleware.Config{Perm: module.CanUpdateWorkspaceBilling})).Post("/billing/portal", a.CreateBillingPortalAction)     // open Stripe customer portal
-		}
 
 		r.Route("/kv", func(r chi.Router) {
 			r.With(middleware.Protect(middleware.Config{Perm: module.CanListKeyValue})).Get("/", a.ListKeyValueAction)         // list workspace keys
@@ -210,25 +200,6 @@ func RunServer(Static embed.FS) error {
 	}()
 
 	defer module.StopBus()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	done := make(chan struct{})
-
-	sched := module.NewScheduler(
-		db.NewHealthCheckRepository(db.GetDB()),
-		db.NewAgentInstanceRepository(db.GetDB()),
-		module.GetBus(),
-	)
-
-	go func() {
-		defer close(done)
-		sched.Run(ctx)
-	}()
-
-	defer func() {
-		cancel()
-		<-done
-	}()
 
 	timeout := time.Duration(viper.GetInt("app.timeout")) * time.Second
 

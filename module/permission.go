@@ -29,23 +29,10 @@ const (
 	CanInviteMember         = "CAN_INVITE_MEMBER"
 	CanRemoveInvite         = "CAN_REMOVE_INVITE"
 
-	CanGetWorkspaceBilling    = "CAN_GET_WORKSPACE_BILLING"
-	CanUpdateWorkspaceBilling = "CAN_UPDATE_WORKSPACE_BILLING"
-
 	CanListAccessKeys  = "CAN_LIST_WORKSPACE_ACCESS_KEYS"
 	CanCreateAccessKey = "CAN_CREATE_WORKSPACE_ACCESS_KEY"
 	CanGetAccessKey    = "CAN_GET_WORKSPACE_ACCESS_KEY"
 	CanDeleteAccessKey = "CAN_DELETE_WORKSPACE_ACCESS_KEY"
-
-	CanListAgents  = "CAN_LIST_AGENTS"
-	CanGetAgent    = "CAN_GET_AGENT"
-	CanUpsertAgent = "CAN_UPSERT_AGENT"
-	CanDeleteAgent = "CAN_DELETE_AGENT"
-
-	CanListInstances    = "CAN_LIST_INSTANCES"
-	CanGetInstance      = "CAN_GET_INSTANCE"
-	CanRegisterInstance = "CAN_REGISTER_INSTANCE"
-	CanReportCheck      = "CAN_REPORT_CHECK"
 
 	CanListIntegrations  = "CAN_LIST_INTEGRATIONS"
 	CanGetIntegration    = "CAN_GET_INTEGRATION"
@@ -84,23 +71,10 @@ var AccessKeyPermissions = map[string]bool{
 	CanGetWorkspaceInvite:   true,
 	CanRemoveInvite:         true,
 
-	CanGetWorkspaceBilling:    true,
-	CanUpdateWorkspaceBilling: true,
-
 	CanListAccessKeys:  true,
 	CanCreateAccessKey: true,
 	CanGetAccessKey:    true,
 	CanDeleteAccessKey: true,
-
-	CanListAgents:  true,
-	CanGetAgent:    true,
-	CanUpsertAgent: true,
-	CanDeleteAgent: true,
-
-	CanListInstances:    true,
-	CanGetInstance:      true,
-	CanRegisterInstance: true,
-	CanReportCheck:      true,
 
 	CanListIntegrations:  true,
 	CanGetIntegration:    true,
@@ -214,18 +188,12 @@ func (p *Perm) CanAsUser(permission string) (bool, error) {
 
 	switch permission {
 	case CanGetWorkspace,
-		CanGetWorkspaceBilling,
-		CanListAgents,
-		CanGetAgent,
-		CanListInstances,
-		CanGetInstance,
 		CanListKeyValue,
 		CanGetKeyValue,
 		CanUseChat:
 		return true, nil
 	case CanUpdateWorkspace,
 		CanDeleteWorkspace,
-		CanUpdateWorkspaceBilling,
 		CanListWorkspaceMembers,
 		CanUpdateMemberRole,
 		CanRemoveMember,
@@ -237,10 +205,6 @@ func (p *Perm) CanAsUser(permission string) (bool, error) {
 		CanCreateAccessKey,
 		CanGetAccessKey,
 		CanDeleteAccessKey,
-		CanUpsertAgent,
-		CanDeleteAgent,
-		CanRegisterInstance,
-		CanReportCheck,
 		CanListIntegrations,
 		CanGetIntegration,
 		CanCreateIntegration,

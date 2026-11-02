@@ -32,20 +32,20 @@ func TestUnitChat(t *testing.T) {
 			ChatRepository: repository,
 			Tools: []*ChatTool{
 				{
-					Name:       "list_agents",
-					Permission: CanListAgents,
+					Name:       "list_kv",
+					Permission: CanListKeyValue,
 					Run: func(workspaceId, userId db.Id, args map[string]string) (any, error) {
 						ran = append(ran, args)
-						return map[string]any{"agents": []string{"users", "weather"}}, nil
+						return map[string]any{"keys": []string{"theme", "currency"}}, nil
 					},
 				},
 				{
-					Name:       "get_agent",
+					Name:       "get_kv",
 					Arguments:  map[string]string{"name": "agent name"},
-					Permission: CanGetAgent,
+					Permission: CanGetKeyValue,
 					Run: func(workspaceId, userId db.Id, args map[string]string) (any, error) {
 						ran = append(ran, args)
-						return nil, errors.New("agent not found")
+						return nil, errors.New("kv not found")
 					},
 				},
 			},
@@ -58,14 +58,14 @@ func TestUnitChat(t *testing.T) {
 		return assistant, repository, chat, &ran
 	}
 
-	everything := map[string]bool{CanListAgents: true, CanGetAgent: true}
+	everything := map[string]bool{CanListKeyValue: true, CanGetKeyValue: true}
 
 	t.Run("answer runs the planned tools once and stores only the answer", func(t *testing.T) {
 		assistant, repository, chat, ran := newAssistant(everything,
-			"```json\n{\"calls\": [{\"tool\": \"list_agents\"}, {\"tool\": \"drop_database\"}, {\"tool\": \"get_agent\", \"arguments\": {\"name\": \"users\"}}]}\n```",
-			"You have two agents, users and weather.",
+			"```json\n{\"calls\": [{\"tool\": \"list_kv\"}, {\"tool\": \"drop_database\"}, {\"tool\": \"get_kv\", \"arguments\": {\"name\": \"users\"}}]}\n```",
+			"You have two keys, theme and currency.",
 		)
-		repository.messages = []*db.ChatMessage{{Kind: db.ChatMessageKindUser, Content: "Which agents do I have?"}}
+		repository.messages = []*db.ChatMessage{{Kind: db.ChatMessageKindUser, Content: "Which keys do I have?"}}
 
 		require.NoError(t, assistant.Answer(context.Background(), repository.chat, func(string, any) {}))
 
@@ -76,24 +76,24 @@ func TestUnitChat(t *testing.T) {
 
 		require.Len(t, repository.messages, 2)
 		assert.Equal(t, db.ChatMessageKindAssistant, repository.messages[1].Kind)
-		assert.Equal(t, "You have two agents, users and weather.", repository.messages[1].Content)
+		assert.Equal(t, "You have two keys, theme and currency.", repository.messages[1].Content)
 
 		// Looked-up data reaches the answer as instructions, never as chat turns.
 		answerPrompt := chat.asked[1]
 		require.Len(t, answerPrompt, 2)
-		assert.Contains(t, answerPrompt[0].Content, "weather")
-		assert.Contains(t, answerPrompt[0].Content, "could not be read (agent not found)")
+		assert.Contains(t, answerPrompt[0].Content, "currency")
+		assert.Contains(t, answerPrompt[0].Content, "could not be read (kv not found)")
 	})
 
 	t.Run("send message stores the question and reply streams the chat and answer, then stores it", func(t *testing.T) {
 		viper.Set("app.ai.api_key", "key")
 		t.Cleanup(func() { viper.Set("app.ai.api_key", "") })
 		assistant, repository, _, _ := newAssistant(everything,
-			`{"calls": [{"tool": "list_agents"}]}`,
-			"You have two agents.",
+			`{"calls": [{"tool": "list_kv"}]}`,
+			"You have two keys.",
 		)
 
-		chat, err := assistant.SendMessage("ws-1", "user-1", "chat-1", &SendChatMessageRequest{Content: " Which agents do I have? "})
+		chat, err := assistant.SendMessage("ws-1", "user-1", "chat-1", &SendChatMessageRequest{Content: " Which keys do I have? "})
 
 		require.NoError(t, err)
 		assert.Equal(t, db.ChatStatusRunning, chat.Status)
@@ -113,25 +113,25 @@ func TestUnitChat(t *testing.T) {
 		})
 
 		assert.Equal(t, []string{"chat", "delta", "delta", "delta", "delta", "done"}, events)
-		assert.Equal(t, "You have two agents.", deltas.String())
-		assert.Equal(t, "Which agents do I have?", repository.chat.Title)
+		assert.Equal(t, "You have two keys.", deltas.String())
+		assert.Equal(t, "Which keys do I have?", repository.chat.Title)
 		assert.Equal(t, db.ChatStatusIdle, finished.Status)
 		require.Len(t, finished.Messages, 2)
-		assert.Equal(t, "You have two agents.", finished.Messages[1].Content)
+		assert.Equal(t, "You have two keys.", finished.Messages[1].Content)
 	})
 
 	t.Run("answer only offers tools the user may run", func(t *testing.T) {
-		assistant, repository, chat, _ := newAssistant(map[string]bool{CanListAgents: true},
+		assistant, repository, chat, _ := newAssistant(map[string]bool{CanListKeyValue: true},
 			`{"calls": []}`,
-			"I can list your agents.",
+			"I can list your keys.",
 		)
 		repository.messages = []*db.ChatMessage{{Kind: db.ChatMessageKindUser, Content: "What can you do?"}}
 
 		require.NoError(t, assistant.Answer(context.Background(), repository.chat, func(string, any) {}))
 
 		offered := chat.asked[0][len(chat.asked[0])-1].Content
-		assert.Contains(t, offered, "list_agents")
-		assert.NotContains(t, offered, "get_agent")
+		assert.Contains(t, offered, "list_kv")
+		assert.NotContains(t, offered, "get_kv")
 
 		// The persona only claims what this user may do.
 		answerPrompt := chat.asked[1][0].Content
@@ -140,13 +140,13 @@ func TestUnitChat(t *testing.T) {
 	})
 
 	t.Run("call is denied when the user lost the permission", func(t *testing.T) {
-		allowed := map[string]bool{CanListAgents: true}
+		allowed := map[string]bool{CanListKeyValue: true}
 		assistant, repository, _, ran := newAssistant(allowed)
 		tools, err := assistant.AllowedTools(repository.chat)
 		require.NoError(t, err)
-		allowed[CanListAgents] = false
+		allowed[CanListKeyValue] = false
 
-		result, err := assistant.Call(repository.chat, tools, ChatToolCall{Tool: "list_agents"})
+		result, err := assistant.Call(repository.chat, tools, ChatToolCall{Tool: "list_kv"})
 
 		require.NoError(t, err)
 		assert.Empty(t, *ran)
@@ -215,19 +215,15 @@ func TestUnitChatTools(t *testing.T) {
 		workspace:  &db.Workspace{Id: "ws-1", Name: "Acme", Handle: "acme"},
 		membership: &db.WorkspaceUser{Role: db.UserRoleOwner},
 	}
-	agents := &fakeAgents{list: []*db.Agent{{Id: "agent-1", Name: "users"}}, total: 1}
-
 	tools := NewChatTools(
-		NewWorkspace(workspaces, &fakeWorkspaceUsers{total: 3}, nil, nil),
-		NewAgent(agents, &fakeInstances{}, &fakeHealthChecks{}, workspaces),
-		nil,
+		NewWorkspace(workspaces, &fakeWorkspaceUsers{total: 3}, nil),
 		NewKeyValue(&fakeWorkspaceKeyValues{items: []*db.WorkspaceKeyValue{{Key: "feature/assistant"}}}, workspaces),
 		nil,
 		NewIntegration(&fakeIntegrations{list: []*db.Integration{{
 			Type:     "slack",
 			Name:     "Alerts",
 			IsActive: true,
-			Config:   lo.ToPtr(`{"url":"https://hooks.slack.com/services/T0/B0/secret-token","events":["agent.health.changed"]}`),
+			Config:   lo.ToPtr(`{"url":"https://hooks.slack.com/services/T0/B0/secret-token","events":["audit.log"]}`),
 		}}, total: 1}),
 	)
 
@@ -243,8 +239,6 @@ func TestUnitChatTools(t *testing.T) {
 	assert.Equal(t, db.Id("ws-1"), summary.Workspace.Id)
 	assert.Equal(t, db.UserRoleOwner, summary.Workspace.Role)
 	assert.Equal(t, int64(3), summary.Workspace.MembersCount)
-	assert.Equal(t, int64(1), summary.Agents)
-	assert.Len(t, summary.AgentsByHealth, 1)
 	assert.Equal(t, int64(1), summary.KeyValues)
 
 	// Integration URLs can carry credentials, so they never reach the model.
@@ -256,7 +250,7 @@ func TestUnitChatTools(t *testing.T) {
 	require.NoError(t, err)
 	body, _ := json.Marshal(listed)
 	assert.Contains(t, string(body), `"name":"Alerts"`)
-	assert.Contains(t, string(body), "agent.health.changed")
+	assert.Contains(t, string(body), "audit.log")
 	assert.NotContains(t, string(body), "hooks.slack.com")
 
 	members, ok := lo.Find(tools.List(), func(tool *ChatTool) bool { return tool.Name == "list_members" })

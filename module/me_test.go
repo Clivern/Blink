@@ -86,13 +86,13 @@ func TestUnitMe(t *testing.T) {
 			Id:          "access-1",
 			WorkspaceId: "ws-1",
 			Name:        "agent",
-			Meta:        new(`{"permissions":["` + CanRegisterInstance + `"]}`),
+			Meta:        new(`{"permissions":["` + CanListKeyValue + `"]}`),
 		}})
 
 		response, err := me.GetByAccessKey("key")
 		require.NoError(t, err)
 		assert.Equal(t, "access_key", response.PrincipalType)
-		assert.Equal(t, []string{CanRegisterInstance}, response.AccessKey.Permissions)
+		assert.Equal(t, []string{CanListKeyValue}, response.AccessKey.Permissions)
 		assert.Nil(t, response.AccessKey.ExpiresAt)
 	})
 

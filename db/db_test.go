@@ -14,7 +14,6 @@ import (
 
 	"github.com/clivern/blink/migration"
 	"github.com/google/uuid"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
@@ -114,22 +113,6 @@ func createTestWorkspace(t *testing.T, database *sql.DB) *Workspace {
 	return workspace
 }
 
-func createTestAgent(t *testing.T, database *sql.DB, workspaceId Id, name string) *Agent {
-	t.Helper()
-
-	agent := &Agent{
-		WorkspaceId:  workspaceId,
-		Name:         name,
-		Card:         lo.ToPtr(`{"name":"` + name + `"}`),
-		CardChecksum: lo.ToPtr("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
-		CardPath:     "/.well-known/agent-card.json",
-		Version:      "1.0.0",
-	}
-	require.NoError(t, NewAgentRepository(database).Create(agent))
-
-	return agent
-}
-
 func createTestUser(t *testing.T, database *sql.DB) *User {
 	t.Helper()
 
@@ -150,18 +133,4 @@ func createTestUser(t *testing.T, database *sql.DB) *User {
 	})
 
 	return user
-}
-
-func createTestInstance(t *testing.T, database *sql.DB, agentId Id, instanceId string) *AgentInstance {
-	t.Helper()
-
-	instance := &AgentInstance{
-		AgentId:    agentId,
-		InstanceId: instanceId,
-		Address:    "10.0.12.41",
-		Port:       8080,
-	}
-	require.NoError(t, NewAgentInstanceRepository(database).Create(instance))
-
-	return instance
 }

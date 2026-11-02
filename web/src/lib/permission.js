@@ -39,19 +39,6 @@ export const WORKSPACE_KEY_PERMISSION_GROUPS = [
     ],
   },
   {
-    labelKey: 'workspace_settings_page.perm_group_billing',
-    permissions: [
-      {
-        value: 'CAN_GET_WORKSPACE_BILLING',
-        labelKey: 'workspace_settings_page.perm_get_workspace_billing',
-      },
-      {
-        value: 'CAN_UPDATE_WORKSPACE_BILLING',
-        labelKey: 'workspace_settings_page.perm_update_workspace_billing',
-      },
-    ],
-  },
-  {
     labelKey: 'workspace_settings_page.perm_group_access_keys',
     permissions: [
       {
@@ -70,27 +57,6 @@ export const WORKSPACE_KEY_PERMISSION_GROUPS = [
         value: 'CAN_DELETE_WORKSPACE_ACCESS_KEY',
         labelKey: 'workspace_settings_page.perm_delete_workspace_access_key',
       },
-    ],
-  },
-  {
-    labelKey: 'workspace_settings_page.perm_group_agents',
-    permissions: [
-      { value: 'CAN_LIST_AGENTS', labelKey: 'workspace_settings_page.perm_list_agents' },
-      { value: 'CAN_GET_AGENT', labelKey: 'workspace_settings_page.perm_get_agent' },
-      { value: 'CAN_UPSERT_AGENT', labelKey: 'workspace_settings_page.perm_upsert_agent' },
-      { value: 'CAN_DELETE_AGENT', labelKey: 'workspace_settings_page.perm_delete_agent' },
-    ],
-  },
-  {
-    labelKey: 'workspace_settings_page.perm_group_instances',
-    permissions: [
-      { value: 'CAN_LIST_INSTANCES', labelKey: 'workspace_settings_page.perm_list_instances' },
-      { value: 'CAN_GET_INSTANCE', labelKey: 'workspace_settings_page.perm_get_instance' },
-      {
-        value: 'CAN_REGISTER_INSTANCE',
-        labelKey: 'workspace_settings_page.perm_register_instance',
-      },
-      { value: 'CAN_REPORT_CHECK', labelKey: 'workspace_settings_page.perm_report_check' },
     ],
   },
   {

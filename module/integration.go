@@ -27,9 +27,6 @@ var (
 	ErrFailedDeleteIntegration  = errors.New("failed delete integration")
 	IntegrationEvents           = []string{
 		EventAuditLog,
-		EventAgentHealthChanged,
-		EventAgentInstanceChanged,
-		EventCatalogChanged,
 		EventSystemHealthDegraded,
 	}
 	DatadogSites = []string{
@@ -46,9 +43,6 @@ var (
 	}
 	PagerDutySeverities = map[string]string{
 		EventAuditLog:             "info",
-		EventAgentHealthChanged:   "critical",
-		EventAgentInstanceChanged: "info",
-		EventCatalogChanged:       "info",
 		EventSystemHealthDegraded: "critical",
 	}
 )

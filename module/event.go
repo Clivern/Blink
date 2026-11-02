@@ -18,9 +18,6 @@ import (
 
 const (
 	EventAuditLog              = "audit.log"
-	EventAgentHealthChanged    = "agent.health.changed"
-	EventAgentInstanceChanged  = "agent.instance.changed"
-	EventCatalogChanged        = "catalog.changed"
 	EventSystemHealthDegraded  = "system.health.degraded"
 	IntegrationDeliverTaskType = "integration.deliver"
 )

@@ -26,7 +26,6 @@ var (
 type Workspace struct {
 	WorkspaceRepository     db.WorkspaceRepository
 	WorkspaceUserRepository db.WorkspaceUserRepository
-	SubscriptionRepository  db.SubscriptionRepository
 	UserRepository          db.UserRepository
 }
 
@@ -34,13 +33,11 @@ type Workspace struct {
 func NewWorkspace(
 	workspaces db.WorkspaceRepository,
 	workspaceUsers db.WorkspaceUserRepository,
-	subscriptions db.SubscriptionRepository,
 	users db.UserRepository,
 ) *Workspace {
 	return &Workspace{
 		WorkspaceRepository:     workspaces,
 		WorkspaceUserRepository: workspaceUsers,
-		SubscriptionRepository:  subscriptions,
 		UserRepository:          users,
 	}
 }
@@ -147,18 +144,6 @@ func (w *Workspace) CreateWorkspace(req *CreateWorkspaceRequest, user *db.User) 
 			Str("userId", user.Id.String()).
 			Str("workspaceId", workspace.Id.String()).
 			Msg("Failed to add workspace owner")
-		return nil, err
-	}
-
-	err = w.SubscriptionRepository.Create(&db.Subscription{
-		WorkspaceId: workspace.Id,
-	})
-	if err != nil {
-		log.Error().
-			Err(err).
-			Str("userId", user.Id.String()).
-			Str("workspaceId", workspace.Id.String()).
-			Msg("Failed to create workspace subscription")
 		return nil, err
 	}
 

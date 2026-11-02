@@ -35,18 +35,18 @@ func TestUnitEvent(t *testing.T) {
 			item: &db.Event{
 				Id:          "evt-1",
 				WorkspaceId: "ws-1",
-				Type:        EventCatalogChanged,
+				Type:        EventAuditLog,
 				ActorName:   new("Ada"),
-				Data:        new(`{"agent":"weather"}`),
+				Data:        new(`{"key":"theme"}`),
 				CreatedAt:   createdAt,
 			},
 		})
 
 		response, err := events.GetEvent("ws-1", "evt-1")
 		require.NoError(t, err)
-		assert.Equal(t, EventCatalogChanged, response.Type)
+		assert.Equal(t, EventAuditLog, response.Type)
 		assert.Equal(t, "Ada", *response.ActorName)
-		assert.JSONEq(t, `{"agent":"weather"}`, string(response.Data))
+		assert.JSONEq(t, `{"key":"theme"}`, string(response.Data))
 		assert.Equal(t, "2026-01-02T03:04:05Z", response.CreatedAt)
 	})
 

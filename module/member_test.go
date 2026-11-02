@@ -16,7 +16,7 @@ func TestUnitWorkspaceMember(t *testing.T) {
 	workspace := &fakeWorkspaces{workspace: &db.Workspace{Id: "ws-1"}}
 
 	t.Run("list returns not found for a missing workspace", func(t *testing.T) {
-		_, err := newWorkspaceModule(&fakeWorkspaces{}, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+		_, err := newWorkspaceModule(&fakeWorkspaces{}, &fakeWorkspaceUsers{}).
 			ListWorkspaceMembers("ws-1", 20, 0)
 		assert.ErrorIs(t, err, ErrWorkspaceNotFound)
 	})
@@ -26,7 +26,7 @@ func TestUnitWorkspaceMember(t *testing.T) {
 			list:  []*db.WorkspaceUser{{Id: "m-1", UserId: "user-1", Role: db.UserRoleAdmin}},
 			total: 2,
 		}
-		module := NewWorkspace(workspace, members, &fakeSubscriptions{}, &fakeUsers{})
+		module := NewWorkspace(workspace, members, &fakeUsers{})
 
 		result, err := module.ListWorkspaceMembers("ws-1", 20, 0)
 		require.NoError(t, err)
@@ -42,7 +42,6 @@ func TestUnitWorkspaceMember(t *testing.T) {
 		module := NewWorkspace(
 			workspace,
 			members,
-			&fakeSubscriptions{},
 			&fakeUsers{user: &db.User{Id: "user-1", Name: "Ada", Email: "ada@example.com"}},
 		)
 
@@ -58,19 +57,19 @@ func TestUnitWorkspaceMember(t *testing.T) {
 			membership: &db.WorkspaceUser{Id: "m-1", Role: db.UserRoleRegular},
 		}
 
-		membership, err := newWorkspaceModule(workspace, members, &fakeSubscriptions{}).
+		membership, err := newWorkspaceModule(workspace, members).
 			GetWorkspaceMember("ws-1", "user-1")
 		require.NoError(t, err)
 		assert.Equal(t, db.UserRoleRegular, membership.Role)
 
-		none, err := newWorkspaceModule(workspace, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+		none, err := newWorkspaceModule(workspace, &fakeWorkspaceUsers{}).
 			GetWorkspaceMember("ws-1", "user-1")
 		require.NoError(t, err)
 		assert.Nil(t, none)
 	})
 
 	t.Run("update role returns not found for a missing member", func(t *testing.T) {
-		_, err := newWorkspaceModule(workspace, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+		_, err := newWorkspaceModule(workspace, &fakeWorkspaceUsers{}).
 			UpdateWorkspaceMemberRole("ws-1", "user-1", db.UserRoleAdmin)
 		assert.ErrorIs(t, err, ErrWorkspaceUserNotFound)
 	})
@@ -82,7 +81,6 @@ func TestUnitWorkspaceMember(t *testing.T) {
 		module := NewWorkspace(
 			workspace,
 			members,
-			&fakeSubscriptions{},
 			&fakeUsers{user: &db.User{Id: "user-1", Name: "Ada"}},
 		)
 
@@ -98,7 +96,7 @@ func TestUnitWorkspaceMember(t *testing.T) {
 			membership: &db.WorkspaceUser{Id: "m-1", UserId: "user-1", Role: db.UserRoleOwner},
 		}
 
-		_, err := newWorkspaceModule(workspace, members, &fakeSubscriptions{}).
+		_, err := newWorkspaceModule(workspace, members).
 			UpdateWorkspaceMemberRole("ws-1", "user-1", db.UserRoleAdmin)
 		assert.ErrorIs(t, err, ErrWorkspaceOwnerProtected)
 		assert.Empty(t, members.updated)
@@ -107,14 +105,14 @@ func TestUnitWorkspaceMember(t *testing.T) {
 	t.Run("delete refuses to remove the owner", func(t *testing.T) {
 		members := &fakeWorkspaceUsers{membership: &db.WorkspaceUser{Id: "m-1", Role: db.UserRoleOwner}}
 
-		err := newWorkspaceModule(workspace, members, &fakeSubscriptions{}).
+		err := newWorkspaceModule(workspace, members).
 			DeleteWorkspaceMember("ws-1", "user-1")
 		assert.ErrorIs(t, err, ErrWorkspaceOwnerProtected)
 		assert.Empty(t, members.deleted)
 	})
 
 	t.Run("delete returns not found for a missing member", func(t *testing.T) {
-		err := newWorkspaceModule(workspace, &fakeWorkspaceUsers{}, &fakeSubscriptions{}).
+		err := newWorkspaceModule(workspace, &fakeWorkspaceUsers{}).
 			DeleteWorkspaceMember("ws-1", "user-1")
 		assert.ErrorIs(t, err, ErrWorkspaceUserNotFound)
 	})
@@ -124,7 +122,7 @@ func TestUnitWorkspaceMember(t *testing.T) {
 
 		require.NoError(
 			t,
-			newWorkspaceModule(workspace, members, &fakeSubscriptions{}).
+			newWorkspaceModule(workspace, members).
 				DeleteWorkspaceMember("ws-1", "user-1"),
 		)
 		assert.Equal(t, []db.Id{"m-1"}, members.deleted)

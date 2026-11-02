@@ -5,7 +5,6 @@ package api
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/clivern/blink/db"
 	"github.com/clivern/blink/middleware"
@@ -121,24 +120,6 @@ func newAPIKeyRouter(api *API) *chi.Mux {
 	router.Get("/api/v1/apiKeys/{apiKeyId}", api.GetUserAPIKeyAction)
 	router.Delete("/api/v1/apiKeys/{apiKeyId}", api.DeleteUserAPIKeyAction)
 	return router
-}
-
-type fakeSubscriptionRecords struct {
-	db.SubscriptionRepository
-	subscription *db.Subscription
-	err          error
-}
-
-func (f *fakeSubscriptionRecords) GetByWorkspaceId(workspaceId db.Id) (*db.Subscription, error) {
-	return f.subscription, f.err
-}
-
-type fakeUsageRecords struct {
-	db.UsageRepository
-}
-
-func (f *fakeUsageRecords) GetQuantityByPeriod(workspaceId db.Id, utype string, pstart time.Time) (int64, error) {
-	return 0, nil
 }
 
 type fakeInvites struct {
@@ -399,7 +380,6 @@ func newWorkspaceAPI(records *fakeWorkspaceRecords) *API {
 		Workspace: module.NewWorkspace(
 			records,
 			&fakeWorkspaceMembers{count: 2},
-			&fakeSubscriptionRecords{},
 			nil,
 		),
 	}
@@ -417,10 +397,6 @@ func newWorkspaceRouter(api *API) *chi.Mux {
 
 func (f *fakeUsers) GetByEmail(email string) (*db.User, error) {
 	return f.user, nil
-}
-
-func (f *fakeSubscriptionRecords) Create(subscription *db.Subscription) error {
-	return nil
 }
 
 func requestWithUser(r *http.Request, user *db.User) *http.Request {

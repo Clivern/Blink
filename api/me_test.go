@@ -31,7 +31,7 @@ func TestUnitGetMeAction(t *testing.T) {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	meta := `{"permissions":["` + module.CanRegisterInstance + `"]}`
+	meta := `{"permissions":["` + module.CanListKeyValue + `"]}`
 	accessKey := &db.AccessKey{
 		Id:          "access-1",
 		WorkspaceId: "ws-1",
@@ -107,7 +107,7 @@ func TestUnitGetMeAction(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), `"principalType":"access_key"`)
-		assert.Contains(t, w.Body.String(), `"permissions":["CAN_REGISTER_INSTANCE"]`)
+		assert.Contains(t, w.Body.String(), `"permissions":["CAN_LIST_KEY_VALUE"]`)
 	})
 
 	t.Run("returns 401 for an unknown X-Access-Key", func(t *testing.T) {

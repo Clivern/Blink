@@ -37,7 +37,7 @@ func TestUnitAccess(t *testing.T) {
 		_, err := access.CreateAccessKey(
 			"ws-1",
 			admin,
-			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanRegisterInstance}},
+			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanGetAccessKey}},
 		)
 		assert.ErrorIs(t, err, ErrWorkspaceNotFound)
 	})
@@ -48,7 +48,7 @@ func TestUnitAccess(t *testing.T) {
 		_, err := access.CreateAccessKey("ws-1", admin, &CreateAccessKeyRequest{
 			Name:        "agent",
 			ExpiresAt:   "soon",
-			Permissions: []string{CanRegisterInstance},
+			Permissions: []string{CanGetAccessKey},
 		})
 		assert.ErrorIs(t, err, ErrInvalidExpiresAt)
 	})
@@ -63,7 +63,7 @@ func TestUnitAccess(t *testing.T) {
 		_, err := access.CreateAccessKey(
 			"ws-1",
 			admin,
-			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanRegisterInstance}},
+			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanDeleteAccessKey}},
 		)
 		assert.ErrorIs(t, err, ErrAccessKeyPermissionDenied)
 	})
@@ -76,20 +76,20 @@ func TestUnitAccess(t *testing.T) {
 		_, err := access.CreateAccessKey(
 			"ws-1",
 			key,
-			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanUpdateWorkspaceBilling}},
+			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanDeleteAccessKey}},
 		)
 		assert.ErrorIs(t, err, ErrAccessKeyPermissionDenied)
 	})
 
 	t.Run("create allows permissions the access key holds", func(t *testing.T) {
-		meta := `{"permissions":["` + CanCreateAccessKey + `","` + CanRegisterInstance + `"]}`
+		meta := `{"permissions":["` + CanCreateAccessKey + `","` + CanGetAccessKey + `"]}`
 		key := &Principal{AccessKey: &db.AccessKey{Id: "access-1", WorkspaceId: "ws-1", Meta: &meta}}
 		store := &fakeAccessKeys{}
 
 		_, err := NewAccess(store, workspace).CreateAccessKey(
 			"ws-1",
 			key,
-			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanRegisterInstance}},
+			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanGetAccessKey}},
 		)
 		require.NoError(t, err)
 		require.Len(t, store.created, 1)
@@ -102,13 +102,13 @@ func TestUnitAccess(t *testing.T) {
 		response, err := access.CreateAccessKey(
 			"ws-1",
 			admin,
-			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanRegisterInstance}},
+			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanGetAccessKey}},
 		)
 		require.NoError(t, err)
 		require.Len(t, store.created, 1)
 		require.NotNil(t, store.created[0].Meta)
-		assert.Contains(t, *store.created[0].Meta, CanRegisterInstance)
-		assert.Equal(t, []string{CanRegisterInstance}, response.Permissions)
+		assert.Contains(t, *store.created[0].Meta, CanGetAccessKey)
+		assert.Equal(t, []string{CanGetAccessKey}, response.Permissions)
 		assert.NotEmpty(t, response.Key)
 		assert.Equal(t, response.Key, store.created[0].Key)
 	})
@@ -119,7 +119,7 @@ func TestUnitAccess(t *testing.T) {
 		_, err := access.CreateAccessKey(
 			"ws-1",
 			admin,
-			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanRegisterInstance}},
+			&CreateAccessKeyRequest{Name: "agent", Permissions: []string{CanGetAccessKey}},
 		)
 		assert.ErrorIs(t, err, ErrFailedCreateAccessKey)
 	})
@@ -130,7 +130,7 @@ func TestUnitAccess(t *testing.T) {
 				{
 					Id:   "access-1",
 					Name: "agent",
-					Meta: new(`{"permissions":["` + CanRegisterInstance + `"]}`),
+					Meta: new(`{"permissions":["` + CanGetAccessKey + `"]}`),
 				},
 			},
 			total: 4,
@@ -139,7 +139,7 @@ func TestUnitAccess(t *testing.T) {
 		result, err := NewAccess(store, workspace).ListAccessKeys("ws-1", 20, 0)
 		require.NoError(t, err)
 		assert.Equal(t, int64(4), result.Total)
-		assert.Equal(t, []string{CanRegisterInstance}, result.Keys[0].Permissions)
+		assert.Equal(t, []string{CanGetAccessKey}, result.Keys[0].Permissions)
 	})
 
 	t.Run("get hides keys from another workspace", func(t *testing.T) {

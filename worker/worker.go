@@ -31,18 +31,12 @@ var Registrations []Registration
 // Dependencies are the services required by worker handlers.
 type Dependencies struct {
 	Tasks        db.AsyncTaskRepository
-	Checks       db.HealthCheckRepository
 	Integrations db.IntegrationRepository
-	Instances    db.AgentInstanceRepository
-	Agents       db.AgentRepository
 }
 
 type handlers struct {
 	tasks        db.AsyncTaskRepository
-	checks       db.HealthCheckRepository
 	integrations db.IntegrationRepository
-	instances    db.AgentInstanceRepository
-	agents       db.AgentRepository
 	trigger      module.EventTrigger
 }
 
@@ -50,15 +44,11 @@ type handlers struct {
 func Register(deps Dependencies) {
 	h := &handlers{
 		tasks:        deps.Tasks,
-		checks:       deps.Checks,
 		integrations: deps.Integrations,
-		instances:    deps.Instances,
-		agents:       deps.Agents,
 		trigger:      module.TriggerEvent,
 	}
 
 	On(db.AsyncTaskTypeNoop, h.HandleNoop)
-	On(module.HealthCheckRunSubject, h.HandleHealthCheck)
 	On(module.IntegrationDeliverTaskType, h.HandleIntegrationDelivery)
 }
 

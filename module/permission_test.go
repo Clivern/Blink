@@ -49,12 +49,12 @@ func TestUnitPermission(t *testing.T) {
 		assert.False(t, canUpdate)
 	})
 
-	t.Run("an admin or owner can manage agents", func(t *testing.T) {
+	t.Run("an admin or owner can manage access keys", func(t *testing.T) {
 		for _, role := range []string{db.UserRoleAdmin, db.UserRoleOwner} {
 			allowed, err := newPerm(&db.WorkspaceUser{Role: role}).
 				WithUser(&db.User{Id: "user-1"}).
 				WithWorkspace(workspace).
-				Can(CanDeleteAgent)
+				Can(CanDeleteAccessKey)
 			require.NoError(t, err)
 			assert.True(t, allowed, role)
 		}
@@ -70,13 +70,13 @@ func TestUnitPermission(t *testing.T) {
 	})
 
 	t.Run("an access key is limited to its own workspace", func(t *testing.T) {
-		meta := `{"permissions":["` + CanRegisterInstance + `"]}`
+		meta := `{"permissions":["` + CanListKeyValue + `"]}`
 		key := &db.AccessKey{WorkspaceId: "ws-2", Meta: &meta}
 
 		allowed, err := newPerm(nil).
 			WithAccessKey(key).
 			WithWorkspace(workspace).
-			Can(CanRegisterInstance)
+			Can(CanListKeyValue)
 		require.NoError(t, err)
 		assert.False(t, allowed)
 	})
@@ -84,12 +84,12 @@ func TestUnitPermission(t *testing.T) {
 	t.Run("an access key needs the permission in its metadata", func(t *testing.T) {
 		withPermission := &db.AccessKey{
 			WorkspaceId: "ws-1",
-			Meta:        new(`{"permissions":["` + CanRegisterInstance + `"]}`),
+			Meta:        new(`{"permissions":["` + CanListKeyValue + `"]}`),
 		}
 		allowed, err := newPerm(nil).
 			WithAccessKey(withPermission).
 			WithWorkspace(workspace).
-			Can(CanRegisterInstance)
+			Can(CanListKeyValue)
 		require.NoError(t, err)
 		assert.True(t, allowed)
 
@@ -97,7 +97,7 @@ func TestUnitPermission(t *testing.T) {
 		allowed, err = newPerm(nil).
 			WithAccessKey(withoutPermission).
 			WithWorkspace(workspace).
-			Can(CanRegisterInstance)
+			Can(CanListKeyValue)
 		require.NoError(t, err)
 		assert.False(t, allowed)
 	})
@@ -119,7 +119,7 @@ func TestUnitPermission(t *testing.T) {
 		_, err := newPerm(nil).
 			WithAccessKey(key).
 			WithWorkspace(workspace).
-			Can(CanRegisterInstance)
+			Can(CanListKeyValue)
 		assert.Error(t, err)
 	})
 
@@ -140,8 +140,8 @@ func TestUnitPermission(t *testing.T) {
 	})
 
 	t.Run("valid access key permissions accept the allowed set only", func(t *testing.T) {
-		assert.True(t, ValidAccessKeyPermissions([]string{CanRegisterInstance}))
-		assert.True(t, ValidAccessKeyPermissions([]string{CanReportCheck}))
+		assert.True(t, ValidAccessKeyPermissions([]string{CanListKeyValue}))
+		assert.True(t, ValidAccessKeyPermissions([]string{CanListEvents}))
 		assert.False(t, ValidAccessKeyPermissions([]string{"CAN_FLY"}))
 		assert.False(t, ValidAccessKeyPermissions(nil))
 	})

@@ -119,7 +119,7 @@
             type="text"
             required
             class="input-field font-mono"
-            placeholder="agents/invoice-extractor/model"
+            placeholder="notifications/slack/url"
             autocomplete="off"
             :disabled="saving || isEditing"
           />

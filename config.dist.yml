@@ -61,16 +61,6 @@ app:
       max_idle_conns: ${BLINK_DATABASE_MAX_IDLE_CONNS:-10}
       conn_max_lifetime: ${BLINK_DATABASE_CONN_MAX_LIFETIME:-300}
 
-  billing:
-    provider: ${BLINK_BILLING_PROVIDER:-stripe}
-    secret_key: ${BLINK_STRIPE_SECRET_KEY:-}
-    webhook_secret: ${BLINK_STRIPE_WEBHOOK_SECRET:-}
-    tokens_per_usd: ${BLINK_TOKENS_PER_USD:-20000}
-    urls:
-      checkout_success: ${BLINK_STRIPE_CHECKOUT_SUCCESS_URL:-/billing/success}
-      checkout_cancel: ${BLINK_STRIPE_CHECKOUT_CANCEL_URL:-/billing/cancel}
-      portal_return: ${BLINK_STRIPE_PORTAL_RETURN_URL:-/billing}
-
   ai:
     # openrouter
     provider: ${BLINK_AI_PROVIDER:-openrouter}

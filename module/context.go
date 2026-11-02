@@ -29,9 +29,6 @@ type AppCtxKey struct{}
 // PrincipalKey is the context key for the authenticated principal.
 type PrincipalKey struct{}
 
-// AgentKey is the context key for the agent authenticated by its identity.
-type AgentKey struct{}
-
 // NewAppCtx builds an AppCtx from request metadata.
 func NewAppCtx(requestID, userAgent, ipAddress string, features map[string]bool) *AppCtx {
 	if features == nil {
@@ -107,16 +104,4 @@ func AccessKeyFrom(ctx context.Context) (*db.AccessKey, bool) {
 	}
 
 	return p.AccessKey, true
-}
-
-// WithAgent stores the agent authenticated by its identity on a context.
-func WithAgent(ctx context.Context, agent *db.Agent) context.Context {
-	return context.WithValue(ctx, AgentKey{}, agent)
-}
-
-// AgentFrom retrieves the agent authenticated by its identity from a context.
-func AgentFrom(ctx context.Context) (*db.Agent, bool) {
-	agent, ok := ctx.Value(AgentKey{}).(*db.Agent)
-
-	return agent, ok
 }

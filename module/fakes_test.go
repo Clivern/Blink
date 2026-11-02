@@ -8,16 +8,12 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"testing"
 	"time"
 
 	"github.com/clivern/blink/db"
 	"github.com/clivern/blink/pkg/ai"
-	"github.com/clivern/blink/pkg/stripe"
 
 	"github.com/samber/lo"
-	"github.com/spf13/viper"
-	"github.com/stretchr/testify/require"
 )
 
 type fakeWorkspaces struct {
@@ -70,274 +66,8 @@ func (f *fakeWorkspaces) GetWorkspaceMembership(workspaceId, userId db.Id) (*db.
 	return f.membership, nil
 }
 
-type fakeAgents struct {
-	db.AgentRepository
-	agent   *db.Agent
-	list    []*db.Agent
-	total   int64
-	created []*db.Agent
-	updated []*db.Agent
-	deleted []db.Id
-	cards   []string
-}
-
-func (f *fakeAgents) GetById(id db.Id) (*db.Agent, error) {
-	return f.agent, nil
-}
-
-func (f *fakeAgents) GetByWorkspaceAndName(workspaceId db.Id, name string) (*db.Agent, error) {
-	return f.agent, nil
-}
-
-func (f *fakeAgents) Create(agent *db.Agent) error {
-	f.created = append(f.created, agent)
-	return nil
-}
-
-func (f *fakeAgents) Update(agent *db.Agent) error {
-	f.updated = append(f.updated, agent)
-	return nil
-}
-
-func (f *fakeAgents) SetCardIfMissing(id db.Id, card, checksum string) (bool, error) {
-	f.cards = append(f.cards, card)
-	return true, nil
-}
-
-func (f *fakeAgents) Delete(id db.Id) error {
-	f.deleted = append(f.deleted, id)
-	return nil
-}
-
-func (f *fakeAgents) ListByWorkspaceId(workspaceId db.Id, limit, offset int) ([]*db.Agent, error) {
-	return f.list, nil
-}
-
-func (f *fakeAgents) CountByWorkspaceId(workspaceId db.Id) (int64, error) {
-	return f.total, nil
-}
-
-type fakeAgentChecks struct {
-	db.AgentCheckRepository
-	template *db.AgentCheck
-	list     []*db.AgentCheck
-	total    int64
-	created  []*db.AgentCheck
-	updated  []*db.AgentCheck
-	deleted  []db.Id
-}
-
-func (f *fakeAgentChecks) GetByAgentAndCheckId(agentId db.Id, checkId string) (*db.AgentCheck, error) {
-	return f.template, nil
-}
-
-func (f *fakeAgentChecks) Create(check *db.AgentCheck) error {
-	f.created = append(f.created, check)
-	return nil
-}
-
-func (f *fakeAgentChecks) Update(check *db.AgentCheck) error {
-	f.updated = append(f.updated, check)
-	return nil
-}
-
-func (f *fakeAgentChecks) Delete(id db.Id) error {
-	f.deleted = append(f.deleted, id)
-	return nil
-}
-
-func (f *fakeAgentChecks) ListByAgentId(agentId db.Id) ([]*db.AgentCheck, error) {
-	return f.list, nil
-}
-
-func (f *fakeAgentChecks) ListPageByAgentId(agentId db.Id, limit, offset int) ([]*db.AgentCheck, error) {
-	return f.list, nil
-}
-
-func (f *fakeAgentChecks) CountByAgentId(agentId db.Id) (int64, error) {
-	return f.total, nil
-}
-
-type fakeAgentIdentities struct {
-	db.AgentIdentityRepository
-	identity *db.AgentIdentity
-	byName   *db.AgentIdentity
-	list     []*db.AgentIdentity
-	created  []*db.AgentIdentity
-	updated  []*db.AgentIdentity
-	deleted  []db.Id
-}
-
-func (f *fakeAgentIdentities) GetById(id db.Id) (*db.AgentIdentity, error) {
-	return f.identity, nil
-}
-
-func (f *fakeAgentIdentities) GetByAgentAndName(agentId db.Id, name string) (*db.AgentIdentity, error) {
-	return f.byName, nil
-}
-
-func (f *fakeAgentIdentities) Create(identity *db.AgentIdentity) error {
-	identity.Id = "identity-1"
-	f.created = append(f.created, identity)
-	return nil
-}
-
-func (f *fakeAgentIdentities) Update(identity *db.AgentIdentity) error {
-	f.updated = append(f.updated, identity)
-	return nil
-}
-
-func (f *fakeAgentIdentities) Delete(id db.Id) error {
-	f.deleted = append(f.deleted, id)
-	return nil
-}
-
-func (f *fakeAgentIdentities) ListByAgentId(agentId db.Id) ([]*db.AgentIdentity, error) {
-	return f.list, nil
-}
-
-type fakeIdentityTokens struct {
-	db.AgentIdentityTokenRepository
-	created []*db.AgentIdentityToken
-}
-
-func (f *fakeIdentityTokens) Create(token *db.AgentIdentityToken) error {
-	f.created = append(f.created, token)
-	return nil
-}
-
-func (f *fakeIdentityTokens) DeleteExpired() (int64, error) {
-	return 0, nil
-}
-
-type fakeInstances struct {
-	db.AgentInstanceRepository
-	list     []*db.AgentInstance
-	live     []*db.AgentInstance
-	instance *db.AgentInstance
-	created  []*db.AgentInstance
-	updated  []*db.AgentInstance
-	deleted  []db.Id
-}
-
-func (f *fakeInstances) ListByAgentId(agentId db.Id) ([]*db.AgentInstance, error) {
-	return f.list, nil
-}
-
-func (f *fakeInstances) ListLiveByAgentId(agentId db.Id, now time.Time) ([]*db.AgentInstance, error) {
-	return f.live, nil
-}
-
-func (f *fakeInstances) CountByAgentId(agentId db.Id) (int64, error) {
-	return int64(len(f.list)), nil
-}
-
-func (f *fakeInstances) ListPageByAgentId(agentId db.Id, limit, offset int) ([]*db.AgentInstance, error) {
-	return pageInstances(f.list, limit, offset), nil
-}
-
-func (f *fakeInstances) CountLiveByAgentId(agentId db.Id, now time.Time) (int64, error) {
-	return int64(len(f.live)), nil
-}
-
-func (f *fakeInstances) ListLivePageByAgentId(
-	agentId db.Id,
-	now time.Time,
-	limit, offset int,
-) ([]*db.AgentInstance, error) {
-	return pageInstances(f.live, limit, offset), nil
-}
-
-func pageInstances(items []*db.AgentInstance, limit, offset int) []*db.AgentInstance {
-	if offset >= len(items) {
-		return nil
-	}
-
-	end := min(offset+limit, len(items))
-
-	return items[offset:end]
-}
-
-func (f *fakeInstances) GetByAgentAndInstanceId(agentId db.Id, instanceId string) (*db.AgentInstance, error) {
-	return f.instance, nil
-}
-
-func (f *fakeInstances) Create(instance *db.AgentInstance) error {
-	instance.Id = "inst-new"
-	f.created = append(f.created, instance)
-	return nil
-}
-
-func (f *fakeInstances) Update(instance *db.AgentInstance) error {
-	f.updated = append(f.updated, instance)
-	return nil
-}
-
-func (f *fakeInstances) Delete(id db.Id) error {
-	f.deleted = append(f.deleted, id)
-	return nil
-}
-
 // errTest is the error fakes return when a test wants a repository failure.
 var errTest = errors.New("boom")
-
-// reportCall records the arguments of one HealthCheckRepository.Report call.
-type reportCall struct {
-	id           db.Id
-	status       string
-	output       string
-	ttlExpiresAt *time.Time
-}
-
-type fakeHealthChecks struct {
-	db.HealthCheckRepository
-	byInstance     map[db.Id]*db.HealthCheck
-	checks         map[db.Id][]*db.HealthCheck
-	created        []*db.HealthCheck
-	updated        []*db.HealthCheck
-	deleted        []db.Id
-	deletedByAgent []db.Id
-	reports        []reportCall
-	passed         []reportCall
-}
-
-func (f *fakeHealthChecks) GetByInstanceAndCheckId(instanceId db.Id, checkId string) (*db.HealthCheck, error) {
-	return f.byInstance[instanceId], nil
-}
-
-func (f *fakeHealthChecks) ListByInstanceId(instanceId db.Id) ([]*db.HealthCheck, error) {
-	return f.checks[instanceId], nil
-}
-
-func (f *fakeHealthChecks) Create(check *db.HealthCheck) error {
-	f.created = append(f.created, check)
-	return nil
-}
-
-func (f *fakeHealthChecks) Update(check *db.HealthCheck) error {
-	f.updated = append(f.updated, check)
-	return nil
-}
-
-func (f *fakeHealthChecks) Delete(id db.Id) error {
-	f.deleted = append(f.deleted, id)
-	return nil
-}
-
-func (f *fakeHealthChecks) DeleteByAgentAndCheckId(agentId db.Id, checkId string) error {
-	f.deletedByAgent = append(f.deletedByAgent, agentId)
-	return nil
-}
-
-func (f *fakeHealthChecks) Pass(id db.Id, output string, ttlExpiresAt *time.Time) error {
-	f.passed = append(f.passed, reportCall{id: id, output: output, ttlExpiresAt: ttlExpiresAt})
-	return nil
-}
-
-func (f *fakeHealthChecks) Report(id db.Id, status, output string, ttlExpiresAt *time.Time) error {
-	f.reports = append(f.reports, reportCall{id: id, status: status, output: output, ttlExpiresAt: ttlExpiresAt})
-	return nil
-}
 
 type fakeConfigs struct {
 	db.ConfigRepository
@@ -456,137 +186,6 @@ type fakeWorkspaceStats struct {
 
 func (f *fakeWorkspaceStats) GetByWorkspaceId(workspaceId db.Id) (*db.WorkspaceStats, error) {
 	return &db.WorkspaceStats{}, f.err
-}
-
-type checkFixture struct {
-	check        *Check
-	agentChecks  *fakeAgentChecks
-	healthChecks *fakeHealthChecks
-	instances    *fakeInstances
-	events       *recordingTrigger
-}
-
-// newCheckFixture wires a Check module to in-memory fakes; a nil agent simulates a missing one.
-func newCheckFixture(agent *db.Agent) *checkFixture {
-	f := &checkFixture{
-		agentChecks:  &fakeAgentChecks{},
-		healthChecks: &fakeHealthChecks{byInstance: map[db.Id]*db.HealthCheck{}},
-		instances:    &fakeInstances{},
-	}
-	f.check = NewCheck(
-		&fakeAgents{agent: agent},
-		f.agentChecks,
-		f.instances,
-		f.healthChecks,
-	)
-	f.events = &recordingTrigger{}
-	f.check.TriggerEvent = f.events.Trigger
-
-	return f
-}
-
-func defaultCheckFixture() *checkFixture {
-	return newCheckFixture(&db.Agent{Id: "agent-1", Name: "support-assistant"})
-}
-
-type identityFixture struct {
-	identity   *Identity
-	identities *fakeAgentIdentities
-	tokens     *fakeIdentityTokens
-}
-
-// newIdentityFixture wires an Identity module to in-memory fakes; a nil agent simulates a missing one.
-func newIdentityFixture(agent *db.Agent) *identityFixture {
-	f := &identityFixture{identities: &fakeAgentIdentities{}, tokens: &fakeIdentityTokens{}}
-	f.identity = NewIdentity(&fakeAgents{agent: agent}, f.identities, f.tokens)
-
-	return f
-}
-
-func defaultIdentityFixture() *identityFixture {
-	return newIdentityFixture(&db.Agent{Id: "agent-1", Name: "support-assistant"})
-}
-
-// newProtectionFixture wires a Protection module to in-memory fakes; a nil agent simulates a missing one.
-type agentFixture struct {
-	agent        *Agent
-	agents       *fakeAgents
-	instances    *fakeInstances
-	healthChecks *fakeHealthChecks
-}
-
-// newAgentFixture wires an Agent module to in-memory fakes; a nil workspace or agent simulates a missing one.
-func newAgentFixture(workspace *db.Workspace, agent *db.Agent) *agentFixture {
-	f := &agentFixture{
-		agents:       &fakeAgents{agent: agent},
-		instances:    &fakeInstances{},
-		healthChecks: &fakeHealthChecks{checks: map[db.Id][]*db.HealthCheck{}},
-	}
-	f.agent = NewAgent(
-		f.agents,
-		f.instances,
-		f.healthChecks,
-		&fakeWorkspaces{workspace: workspace},
-	)
-
-	return f
-}
-
-func defaultAgentFixture() *agentFixture {
-	return newAgentFixture(
-		&db.Workspace{Id: "ws-1"},
-		&db.Agent{
-			Id:          "agent-1",
-			WorkspaceId: "ws-1",
-			Name:        "support-assistant",
-			Version:     "1.0.0",
-			Card:        lo.ToPtr(`{"name":"Support"}`),
-			CardPath:    "/.well-known/agent-card.json",
-		},
-	)
-}
-
-type instanceFixture struct {
-	instance     *Instance
-	agents       *fakeAgents
-	instances    *fakeInstances
-	healthChecks *fakeHealthChecks
-	agentChecks  *fakeAgentChecks
-	events       *recordingTrigger
-}
-
-// newInstanceFixture wires an Instance module to in-memory fakes; a nil workspace or agent simulates a missing one.
-func newInstanceFixture(workspace *db.Workspace, agent *db.Agent) *instanceFixture {
-	f := &instanceFixture{
-		agents:    &fakeAgents{agent: agent},
-		instances: &fakeInstances{},
-		healthChecks: &fakeHealthChecks{
-			byInstance: map[db.Id]*db.HealthCheck{},
-			checks:     map[db.Id][]*db.HealthCheck{},
-		},
-		agentChecks: &fakeAgentChecks{},
-	}
-	f.instance = NewInstance(
-		f.agents,
-		f.instances,
-		f.healthChecks,
-		f.agentChecks,
-		&fakeWorkspaces{workspace: workspace},
-	)
-	f.instance.FetchCard = func(ctx context.Context, address string, port int, path string) (map[string]any, error) {
-		return nil, errors.New("connection refused")
-	}
-	f.events = &recordingTrigger{}
-	f.instance.TriggerEvent = f.events.Trigger
-
-	return f
-}
-
-func defaultInstanceFixture() *instanceFixture {
-	return newInstanceFixture(
-		&db.Workspace{Id: "ws-1"},
-		&db.Agent{Id: "agent-1", WorkspaceId: "ws-1", Name: "support-assistant"},
-	)
 }
 
 type fakeWorkspaceKeyValues struct {
@@ -750,44 +349,6 @@ func (f *fakeWorkspaceUsers) CountByWorkspaceId(workspaceId db.Id) (int64, error
 	return f.total, f.err
 }
 
-type fakeSubscriptions struct {
-	db.SubscriptionRepository
-	subscription *db.Subscription
-	created      []*db.Subscription
-	updated      []*db.Subscription
-	consumed     []int64
-	added        []int64
-	err          error
-}
-
-func (f *fakeSubscriptions) Create(subscription *db.Subscription) error {
-	f.created = append(f.created, subscription)
-
-	return f.err
-}
-
-func (f *fakeSubscriptions) Update(subscription *db.Subscription) error {
-	f.updated = append(f.updated, subscription)
-
-	return f.err
-}
-
-func (f *fakeSubscriptions) GetByWorkspaceId(workspaceId db.Id) (*db.Subscription, error) {
-	return f.subscription, f.err
-}
-
-func (f *fakeSubscriptions) AddTokens(workspaceId db.Id, tokens int64) error {
-	f.added = append(f.added, tokens)
-
-	return f.err
-}
-
-func (f *fakeSubscriptions) ConsumeTokens(workspaceId db.Id, tokens int64) error {
-	f.consumed = append(f.consumed, tokens)
-
-	return f.err
-}
-
 type fakeIntegrations struct {
 	db.IntegrationRepository
 	item    *db.Integration
@@ -871,29 +432,6 @@ func (f *fakeSessions) DeleteExpired() (int64, error) {
 	return f.expired, f.err
 }
 
-type fakeUsage struct {
-	db.UsageRepository
-	quantities  map[string]int64
-	incremented []int64
-	err         error
-}
-
-func (f *fakeUsage) GetQuantityByPeriod(workspaceId db.Id, utype string, pstart time.Time) (int64, error) {
-	return f.quantities[utype], f.err
-}
-
-func (f *fakeUsage) IncrementByPeriod(
-	workspaceId db.Id,
-	utype string,
-	pstart, pend time.Time,
-	quantity int64,
-	unit string,
-) error {
-	f.incremented = append(f.incremented, quantity)
-
-	return f.err
-}
-
 type fakeUserInvites struct {
 	db.UserInviteRepository
 	item          *db.UserInvite
@@ -962,63 +500,11 @@ func (f *fakeMailer) SendInviteEmail(to, inviteLink, pname string) error {
 	return f.err
 }
 
-type fakeTokenPurchases struct {
-	db.TokenPurchaseRepository
-	inserted bool
-	created  []*db.TokenPurchase
-	err      error
-}
-
-func (f *fakeTokenPurchases) Create(purchase *db.TokenPurchase) (bool, error) {
-	f.created = append(f.created, purchase)
-
-	return f.inserted, f.err
-}
-
-// enableBilling switches the process to the SaaS edition with Stripe, reset after the test.
-func enableBilling(t *testing.T) *stripe.Client {
-	t.Helper()
-	t.Setenv("BLINK_EDITION", "saas")
-	viper.Set("app.billing.provider", "stripe")
-	viper.Set("app.billing.secret_key", "sk_test_123")
-	viper.Set("app.billing.webhook_secret", "whsec_test")
-	t.Cleanup(func() {
-		viper.Set("app.billing.provider", "")
-		viper.Set("app.billing.secret_key", "")
-		viper.Set("app.billing.webhook_secret", "")
-	})
-
-	client, err := stripe.New()
-	require.NoError(t, err)
-
-	return client
-}
-
-func newBillingModule(
-	workspace *db.Workspace,
-	subscription *db.Subscription,
-) (*Billing, *fakeSubscriptions, *fakeTokenPurchases) {
-	subscriptions := &fakeSubscriptions{subscription: subscription}
-	purchases := &fakeTokenPurchases{inserted: true}
-	billing := NewBilling(&fakeWorkspaces{workspace: workspace}, subscriptions, purchases, Usage{})
-
-	return billing, subscriptions, purchases
-}
-
-func newInviteModule(
-	invites *fakeUserInvites,
-	users *fakeUsers,
+func newWorkspaceModule(
+	workspaces *fakeWorkspaces,
 	members *fakeWorkspaceUsers,
-	mailer *fakeMailer,
-) *Invite {
-	return NewInvite(
-		invites,
-		users,
-		&fakeConfigs{},
-		&fakeWorkspaces{workspace: &db.Workspace{Id: "ws-1"}},
-		members,
-		mailer,
-	)
+) *Workspace {
+	return NewWorkspace(workspaces, members, &fakeUsers{})
 }
 
 func googleIdentity() *OAuthIdentity {
@@ -1046,12 +532,20 @@ func newPerm(membership *db.WorkspaceUser) *Perm {
 	return perm
 }
 
-func newWorkspaceModule(
-	workspaces *fakeWorkspaces,
+func newInviteModule(
+	invites *fakeUserInvites,
+	users *fakeUsers,
 	members *fakeWorkspaceUsers,
-	subscriptions *fakeSubscriptions,
-) *Workspace {
-	return NewWorkspace(workspaces, members, subscriptions, &fakeUsers{})
+	mailer *fakeMailer,
+) *Invite {
+	return NewInvite(
+		invites,
+		users,
+		&fakeConfigs{},
+		&fakeWorkspaces{workspace: &db.Workspace{Id: "ws-1"}},
+		members,
+		mailer,
+	)
 }
 
 type fakeNotifications struct {
@@ -1154,45 +648,6 @@ func (f *fakeEvents) CountByWorkspaceId(workspaceId db.Id) (int64, error) {
 	return f.total, f.err
 }
 
-func (f *fakeAgentIdentities) ListActiveByAgentId(agentId db.Id) ([]*db.AgentIdentity, error) {
-	return lo.Filter(f.list, func(identity *db.AgentIdentity, _ int) bool { return identity.IsActive }), nil
-}
-
-func (f *fakeIdentityTokens) GetByTokenHash(tokenHash string) (*db.AgentIdentityToken, error) {
-	token, _ := lo.Find(f.created, func(token *db.AgentIdentityToken) bool { return token.TokenHash == tokenHash })
-	return token, nil
-}
-
-type fakeAgentSkills struct {
-	db.AgentSkillRepository
-	skills      []*db.CallableSkill
-	total       int64
-	filter      *db.ListCallableSkillsFilter
-	skill       *db.AgentSkill
-	agents      []*db.CallableAgent
-	agentFilter *db.ListCallableAgentsFilter
-	err         error
-}
-
-func (f *fakeAgentSkills) ListCallable(workspaceId db.Id, filter *db.ListCallableSkillsFilter) ([]*db.CallableSkill, int64, error) {
-	f.filter = filter
-	return f.skills, f.total, f.err
-}
-
-func (f *fakeAgentSkills) GetSkill(workspaceId db.Id, skillId string) (*db.AgentSkill, error) {
-	return f.skill, f.err
-}
-
-func (f *fakeAgentSkills) ListCallableAgents(workspaceId db.Id, skillId string, filter *db.ListCallableAgentsFilter) ([]*db.CallableAgent, int64, error) {
-	f.agentFilter = filter
-	return f.agents, f.total, f.err
-}
-
-func (f *fakeInstances) GetById(id db.Id) (*db.AgentInstance, error) {
-	return f.instance, nil
-}
-
-// newAgentsFixture wires an agents module to in-memory fakes whose one agent runs one live instance at address.
 type fakeChats struct {
 	db.ChatRepository
 	chat     *db.Chat

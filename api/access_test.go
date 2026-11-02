@@ -19,7 +19,7 @@ import (
 
 func TestUnitAccessKeyActions(t *testing.T) {
 	workspace := &db.Workspace{Id: "ws-1"}
-	permissions := `["` + module.CanRegisterInstance + `"]`
+	permissions := `["` + module.CanListKeyValue + `"]`
 	meta := `{"permissions":` + permissions + `}`
 	storedKey := &db.AccessKey{
 		Id:          "key-1",

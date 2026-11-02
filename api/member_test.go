@@ -36,7 +36,6 @@ func TestUnitWorkspaceMemberActions(t *testing.T) {
 			Workspace: module.NewWorkspace(
 				&fakeWorkspaceRecords{workspace: workspace},
 				members,
-				&fakeSubscriptionRecords{},
 				users,
 			),
 		}

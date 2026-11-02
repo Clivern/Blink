@@ -28,7 +28,6 @@ type API struct {
 	Workspace *module.Workspace
 	Invite    *module.Invite
 	Access    *module.Access
-	Billing   *module.Billing
 	Stats     *module.Stats
 	Chat      *module.Chat
 	KeyValue  *module.KeyValue
@@ -36,9 +35,6 @@ type API struct {
 	GitHubOAuth   *github.OAuth
 	GoogleOAuth   *google.OAuth
 	FacebookOAuth *fb.OAuth
-
-	WorkspaceUsers db.WorkspaceUserRepository
-	Usage          db.UsageRepository
 }
 
 // New wires repositories and modules once for the process.
@@ -53,17 +49,10 @@ func New() *API {
 	invites := db.NewUserInviteRepository(conn)
 	apiKeys := db.NewAPIKeyRepository(conn)
 	accessKeys := db.NewAccessKeyRepository(conn)
-	subscriptions := db.NewSubscriptionRepository(conn)
-	purchases := db.NewTokenPurchaseRepository(conn)
 	stats := db.NewWorkspaceStatsRepository(conn)
-	agents := db.NewAgentRepository(conn)
-	instances := db.NewAgentInstanceRepository(conn)
-	healthChecks := db.NewHealthCheckRepository(conn)
-	agentChecks := db.NewAgentCheckRepository(conn)
 	integrations := db.NewIntegrationRepository(conn)
 	events := db.NewEventRepository(conn)
 	kv := db.NewWorkspaceKeyValueRepository(conn)
-	usage := db.NewUsageRepository(conn)
 
 	a := &API{
 		Auth:      module.NewAuth(users, sessions, configs),
@@ -72,19 +61,16 @@ func New() *API {
 		Settings:  module.NewSettings(configs),
 		APIKey:    module.NewAPIKey(apiKeys),
 		Me:        module.NewMe(apiKeys, users, accessKeys),
-		Workspace: module.NewWorkspace(workspaces, workspaceUsers, subscriptions, users),
+		Workspace: module.NewWorkspace(workspaces, workspaceUsers, users),
 		Invite:    module.NewInvite(invites, users, configs, workspaces, workspaceUsers, resend.NewMailer()),
 		Access:    module.NewAccess(accessKeys, workspaces),
-		Billing:   module.NewBilling(workspaces, subscriptions, purchases, module.Usage{}),
 		Stats:     module.NewStats(workspaces, stats),
 		KeyValue:  module.NewKeyValue(kv, workspaces),
 		Chat: module.NewChat(
 			db.NewChatRepository(conn),
 			workspaces,
 			module.NewChatTools(
-				module.NewWorkspace(workspaces, workspaceUsers, subscriptions, users),
-				module.NewAgent(agents, instances, healthChecks, workspaces),
-				module.NewInstance(agents, instances, healthChecks, agentChecks, workspaces),
+				module.NewWorkspace(workspaces, workspaceUsers, users),
 				module.NewKeyValue(kv, workspaces),
 				module.NewEvent(events),
 				module.NewIntegration(integrations),
@@ -109,8 +95,6 @@ func New() *API {
 			RedirectURL:  viper.GetString("app.oauth.facebook.redirect_url"),
 			Scopes:       []string{"email", "public_profile"},
 		}),
-		WorkspaceUsers: workspaceUsers,
-		Usage:          usage,
 	}
 
 	Instance = a
