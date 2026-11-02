@@ -339,32 +339,14 @@ msgstr "A user with this email already exists."
 msgid "workspace_not_found"
 msgstr "Workspace not found."
 
-msgid "billing_free_plan_default"
-msgstr "Hobby is already the free default plan."
 
-msgid "failed_create_billing_checkout_session"
-msgstr "Failed to create billing checkout session."
 
-msgid "failed_create_billing_portal_session"
-msgstr "Failed to create billing portal session."
 
-msgid "failed_get_billing_status"
-msgstr "Failed to get billing status."
 
-msgid "failed_get_billing_usage"
-msgstr "Failed to get billing usage."
 
-msgid "invalid_billing_amount"
-msgstr "Enter an amount of at least $1."
 
-msgid "stripe_billing_available_after_purchase"
-msgstr "Stripe billing is available after your first purchase."
 
-msgid "invalid_billing_plan"
-msgstr "Invalid billing plan."
 
-msgid "invalid_stripe_webhook"
-msgstr "Invalid Stripe webhook."
 
 msgid "invalid_github_webhook"
 msgstr "Invalid GitHub webhook."
@@ -372,71 +354,29 @@ msgstr "Invalid GitHub webhook."
 msgid "invalid_webhook_payload"
 msgstr "Invalid webhook payload."
 
-msgid "stripe_billing_available_after_upgrade"
-msgstr "Stripe billing is available after upgrading."
 
-msgid "stripe_billing_not_configured"
-msgstr "Stripe billing is not configured."
 
-msgid "workspace_subscription_not_found"
-msgstr "Workspace subscription not found."
 
 msgid "workspace_member_not_found"
 msgstr "Workspace member not found."
 
-msgid "agent_not_found"
-msgstr "Agent not found."
 
-msgid "invalid_agent_name"
-msgstr "Invalid agent name."
 
-msgid "invalid_agent_card_path"
-msgstr "Invalid agent card path."
 
-msgid "agent_card_pending"
-msgstr "The agent card has not been fetched from an instance yet."
 
-msgid "invalid_agent_version"
-msgstr "Invalid agent version."
 
-msgid "invalid_agent_lb_strategy"
-msgstr "Invalid load balancing strategy."
 
-msgid "failed_agent_request"
-msgstr "Failed to complete the agent request."
 
-msgid "instance_not_found"
-msgstr "Instance not found."
 
-msgid "invalid_instance_id"
-msgstr "Invalid instance id."
 
-msgid "failed_instance_request"
-msgstr "Failed to complete the instance request."
 
-msgid "check_not_found"
-msgstr "Health check not found."
 
-msgid "invalid_check_id"
-msgstr "Invalid health check id."
 
-msgid "unsupported_check_type"
-msgstr "Unsupported health check type. Use ttl, http or tcp."
 
-msgid "invalid_check_path"
-msgstr "The HTTP check path must start with / and contain no spaces."
 
-msgid "invalid_check_scheme"
-msgstr "The HTTP check scheme must be http or https."
 
-msgid "invalid_check_timing"
-msgstr "Invalid check timing. TTL checks need a ttl, and the timeout must be shorter than the interval."
 
-msgid "check_not_reportable"
-msgstr "Only TTL checks can be reported."
 
-msgid "failed_check_request"
-msgstr "Failed to complete the health check request."
 
 msgid "integration_not_found"
 msgstr "Integration not found."
@@ -459,23 +399,13 @@ msgstr "Invalid key."
 msgid "failed_kv_request"
 msgstr "Failed to complete the key request."
 
-msgid "waiting_for_first_check"
-msgstr "Waiting for the first check"
 
 msgid "waiting_for_first_report"
 msgstr "Waiting for the first report"
 
-msgid "identity_not_found"
-msgstr "Agent identity not found."
 
-msgid "identity_already_exists"
-msgstr "An identity with this name already exists for the agent."
 
-msgid "invalid_identity_config"
-msgstr "Basic auth identities need a username, and API key identities must not have one."
 
-msgid "failed_identity_request"
-msgstr "Failed to complete the agent identity request."
 
 msgid "unsupported_grant_type"
 msgstr "Unsupported grant type. Use client_credentials."
@@ -507,14 +437,10 @@ msgstr "Failed to list events."
 msgid "failed_get_event"
 msgstr "Failed to get event."
 
-msgid "invalid_agent_identity"
-msgstr "Invalid agent identity."
 
 msgid "failed_a2a_request"
 msgstr "Failed to complete the A2A request."
 
-msgid "failed_catalog_request"
-msgstr "Failed to load the agent catalog."
 
 msgid "invalid_chat_id"
 msgstr "Invalid chat id."

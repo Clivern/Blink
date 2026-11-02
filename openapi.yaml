@@ -25,7 +25,6 @@ tags:
   - name: Invites
   - name: Members
   - name: Access keys
-  - name: Billing
   - name: Key-value
   - name: Chats
   - name: Metrics
@@ -216,27 +215,6 @@ paths:
       responses:
         "302":
           description: Redirect to app with session cookie set
-
-  /api/v1/public/action/stripe/webhook:
-    post:
-      tags: [Billing]
-      summary: Stripe webhook (SaaS edition only)
-      security: []
-      description: Registered only when the app runs in SaaS mode. Verified with the `Stripe-Signature` header.
-      responses:
-        "200":
-          description: Accepted
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  received:
-                    type: boolean
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "503":
-          $ref: "#/components/responses/ServiceUnavailable"
 
   /api/v1/public/_metrics:
     get:
@@ -840,117 +818,6 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
-  /api/v1/workspaces/{workspaceId}/billing:
-    get:
-      tags: [Billing]
-      summary: Billing status (SaaS only)
-      description: Registered only in SaaS mode. Accepts workspace access keys.
-      security:
-        - sessionCookie: []
-        - userApiKey: []
-        - workspaceAccessKey: []
-      parameters:
-        - $ref: "#/components/parameters/workspaceId"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BillingStatus"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "500":
-          $ref: "#/components/responses/InternalError"
-
-  /api/v1/workspaces/{workspaceId}/billing/usage:
-    get:
-      tags: [Billing]
-      summary: Billing usage (SaaS only)
-      description: Registered only in SaaS mode. Accepts workspace access keys.
-      security:
-        - sessionCookie: []
-        - userApiKey: []
-        - workspaceAccessKey: []
-      parameters:
-        - $ref: "#/components/parameters/workspaceId"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BillingUsage"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "500":
-          $ref: "#/components/responses/InternalError"
-
-  /api/v1/workspaces/{workspaceId}/billing/checkout:
-    post:
-      tags: [Billing]
-      summary: Start Stripe checkout (SaaS only)
-      description: Buys AI token credit for the workspace.
-      parameters:
-        - $ref: "#/components/parameters/workspaceId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/BillingCheckoutRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BillingSession"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "503":
-          $ref: "#/components/responses/ServiceUnavailable"
-        "500":
-          $ref: "#/components/responses/InternalError"
-
-  /api/v1/workspaces/{workspaceId}/billing/portal:
-    post:
-      tags: [Billing]
-      summary: Open Stripe customer portal (SaaS only)
-      parameters:
-        - $ref: "#/components/parameters/workspaceId"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/BillingSession"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "503":
-          $ref: "#/components/responses/ServiceUnavailable"
-        "500":
-          $ref: "#/components/responses/InternalError"
-
   /api/v1/workspaces/{workspaceId}/kv:
     get:
       tags: [Key-value]
@@ -1187,13 +1054,13 @@ paths:
                 type: string
                 example: |
                   event: chat
-                  data: {"id":"...","title":"Which agents do I have?","status":"running","messages":[...]}
+                  data: {"id":"...","title":"What keys are configured?","status":"running","messages":[...]}
 
                   event: delta
-                  data: {"content":"You have **2 agents**"}
+                  data: {"content":"You have **2 keys**"}
 
                   event: done
-                  data: {"id":"...","title":"Which agents do I have?","status":"idle","messages":[...]}
+                  data: {"id":"...","title":"What keys are configured?","status":"idle","messages":[...]}
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -1333,7 +1200,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
     ServiceUnavailable:
-      description: Dependency or billing provider not configured
+      description: Dependency not configured
       content:
         application/json:
           schema:
@@ -1717,73 +1584,6 @@ components:
         updatedAt:
           type: string
           format: date-time
-
-    BillingStatus:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        workspaceId:
-          type: string
-          format: uuid
-        providerCustomerId:
-          type: string
-        aiTokensBalance:
-          type: integer
-          format: int64
-        tokensPerUsd:
-          type: integer
-          format: int64
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-
-    BillingUsage:
-      type: object
-      properties:
-        periodReset:
-          type: string
-          format: date-time
-        used:
-          type: object
-          properties:
-            workspaceMembers:
-              type: integer
-              format: int64
-            aiTokens:
-              type: integer
-              format: int64
-            aiCost:
-              type: number
-        limits:
-          type: object
-          properties:
-            workspaceMembers:
-              type: integer
-              format: int64
-            aiTokens:
-              type: integer
-              format: int64
-
-    BillingCheckoutRequest:
-      type: object
-      required: [amountCents]
-      properties:
-        amountCents:
-          type: integer
-          format: int64
-          minimum: 100
-
-    BillingSession:
-      type: object
-      properties:
-        url:
-          type: string
-          format: uri
 
     PutKeyValueRequest:
       type: object

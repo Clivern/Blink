@@ -1,6 +1,6 @@
 Feature: Workspace key-value store
 
-  Each workspace has a small key-value store for agents to share configuration.
+  Each workspace has a small key-value store for shared configuration.
   Keys are path-like (a/b/c), values are strings, and a key can expire. An
   expired key must behave as if it was never written.
 

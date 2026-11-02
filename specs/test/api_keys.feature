@@ -1,6 +1,6 @@
 Feature: User API keys
 
-  A user makes API keys to act as themselves from scripts and agents. The key
+  A user makes API keys to act as themselves from scripts and apps. The key
   is shown once, when it is made; after that only its name and dates are
   visible. Each key belongs to one user, and nobody else can list, read or
   revoke it.

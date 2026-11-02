@@ -24,10 +24,10 @@ Feature: Workspace access keys
   @mutates @smoke
   Scenario: A new key is returned once with its secret and permissions
     When the user POSTs a key named "spec-<runId>-deploy" with permissions
-      ["CAN_LIST_AGENTS", "CAN_REGISTER_INSTANCE"]
+      ["CAN_LIST_KEY_VALUE", "CAN_GET_KEY_VALUE"]
     Then the response is 201
     And the body has id, workspaceId, name, createdAt and a non-empty key
-    And permissions is exactly ["CAN_LIST_AGENTS", "CAN_REGISTER_INSTANCE"]
+    And permissions is exactly ["CAN_LIST_KEY_VALUE", "CAN_GET_KEY_VALUE"]
 
   @readonly
   Scenario: A key needs at least one permission
@@ -67,14 +67,14 @@ Feature: Workspace access keys
 
   @mutates
   Scenario: An access key can mint a key with a subset of its own permissions
-    Given an access key with only CAN_CREATE_WORKSPACE_ACCESS_KEY and CAN_LIST_AGENTS
-    When that key POSTs a key named "spec-<runId>-child" with permissions ["CAN_LIST_AGENTS"]
+    Given an access key with only CAN_CREATE_WORKSPACE_ACCESS_KEY and CAN_LIST_KEY_VALUE
+    When that key POSTs a key named "spec-<runId>-child" with permissions ["CAN_LIST_KEY_VALUE"]
     Then the response is 201
 
   @mutates
   Scenario: An access key cannot mint a key with a permission it lacks
-    Given an access key with only CAN_CREATE_WORKSPACE_ACCESS_KEY and CAN_LIST_AGENTS
-    When that key POSTs a key named "spec-<runId>-child" with permissions ["CAN_DELETE_AGENT"]
+    Given an access key with only CAN_CREATE_WORKSPACE_ACCESS_KEY and CAN_LIST_KEY_VALUE
+    When that key POSTs a key named "spec-<runId>-child" with permissions ["CAN_DELETE_KEY_VALUE"]
     Then the response is 403
     And no key named "spec-<runId>-child" exists afterwards
 
@@ -94,10 +94,10 @@ Feature: Workspace access keys
 
   @mutates
   Scenario: A deleted key stops working at once
-    Given an access key with only CAN_LIST_AGENTS
+    Given an access key with only CAN_LIST_KEY_VALUE
     When the user DELETEs that key
     Then the response is 204
-    And that key listing the workspace's agents gets 401
+    And that key listing the workspace's keys gets 401
     And reading the key by id returns 404
 
   @readonly
@@ -107,9 +107,9 @@ Feature: Workspace access keys
 
   @mutates @slow
   Scenario: An expired key stops working
-    Given an access key with only CAN_LIST_AGENTS expiring 10 seconds from now
+    Given an access key with only CAN_LIST_KEY_VALUE expiring 10 seconds from now
     When 15 seconds pass
-    And that key lists the workspace's agents
+    And that key lists the workspace's keys
     Then the response is 401
 
   # ---------------------------------------------------------------------------
@@ -124,21 +124,20 @@ Feature: Workspace access keys
 
   @mutates
   Scenario: A key grants exactly its permissions and nothing near them
-    Given an access key with only CAN_LIST_AGENTS
-    And the agent "spec-<runId>-echo" is registered
-    When that key GETs agents/spec-<runId>-echo
+    Given an access key with only CAN_LIST_KEY_VALUE
+    When that key GETs kv/spec-<runId>-secret
     Then the response is 403
 
   @mutates
   Scenario: A key with an expiry in the past never works
-    When the user POSTs a key named "spec-<runId>-past" with permissions ["CAN_LIST_AGENTS"]
+    When the user POSTs a key named "spec-<runId>-past" with permissions ["CAN_LIST_KEY_VALUE"]
       and expiresAt one hour ago
     Then the response is 201 or 400
-    And if 201, that key listing the workspace's agents gets 401
+    And if 201, that key listing the workspace's keys gets 401
 
   @mutates
   Scenario: A key cannot mint keys in another workspace
     Given a second workspace "spec-<runId>-other"
-    And an access key in the run's workspace with only CAN_CREATE_WORKSPACE_ACCESS_KEY and CAN_LIST_AGENTS
-    When that key POSTs a key with permissions ["CAN_LIST_AGENTS"] to the second workspace
+    And an access key in the run's workspace with only CAN_CREATE_WORKSPACE_ACCESS_KEY and CAN_LIST_KEY_VALUE
+    When that key POSTs a key with permissions ["CAN_LIST_KEY_VALUE"] to the second workspace
     Then the response is 403

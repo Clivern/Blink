@@ -16,24 +16,24 @@ Feature: API conventions
 
   @readonly @smoke
   Scenario: Every error body carries an errorMessage
-    When the user GETs agents/spec-<runId>-missing in the run's workspace
+    When the user GETs invites/spec-<runId>-missing in the run's workspace
     Then the response is 404
     And the body is JSON with a non-empty string errorMessage
 
   @readonly
   Scenario: Errors are in English by default
-    When the user GETs agents/spec-<runId>-missing with no Accept-Language
-    Then the errorMessage is "Agent not found."
+    When the user GETs invites/spec-<runId>-missing with no Accept-Language
+    Then the errorMessage is "Invite not found."
 
   @readonly
   Scenario: Errors follow Accept-Language when the language is supported
-    When the user GETs agents/spec-<runId>-missing with Accept-Language "fr-FR,fr;q=0.9"
-    Then the errorMessage is "Agent introuvable."
+    When the user GETs invites/spec-<runId>-missing with Accept-Language "fr-FR,fr;q=0.9"
+    Then the errorMessage is "Invitation introuvable."
 
   @readonly
   Scenario: An unsupported language falls back to English
-    When the user GETs agents/spec-<runId>-missing with Accept-Language "de-DE"
-    Then the errorMessage is "Agent not found."
+    When the user GETs invites/spec-<runId>-missing with Accept-Language "de-DE"
+    Then the errorMessage is "Invite not found."
 
   @readonly
   Scenario: A malformed JSON body is a 400, not a 500
@@ -109,7 +109,7 @@ Feature: API conventions
   Scenario: API responses are JSON, errors included
     When the user GETs /api/v1/me
     Then the Content-Type is application/json
-    When the user GETs agents/spec-<runId>-missing in the run's workspace
+    When the user GETs invites/spec-<runId>-missing in the run's workspace
     Then the Content-Type is application/json
 
   @readonly

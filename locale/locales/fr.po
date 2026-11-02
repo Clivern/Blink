@@ -339,32 +339,14 @@ msgstr "Un utilisateur avec cet e-mail existe déjà."
 msgid "workspace_not_found"
 msgstr "Espace de travail introuvable."
 
-msgid "billing_free_plan_default"
-msgstr "Hobby est déjà le plan gratuit par défaut."
 
-msgid "failed_create_billing_checkout_session"
-msgstr "Échec de la création de la session de paiement."
 
-msgid "failed_create_billing_portal_session"
-msgstr "Échec de la création de la session du portail de facturation."
 
-msgid "failed_get_billing_status"
-msgstr "Échec de la récupération de l'état de facturation."
 
-msgid "failed_get_billing_usage"
-msgstr "Échec de la récupération de l'utilisation de facturation."
 
-msgid "invalid_billing_amount"
-msgstr "Saisissez un montant d'au moins 1 $."
 
-msgid "stripe_billing_available_after_purchase"
-msgstr "La facturation Stripe est disponible après votre premier achat."
 
-msgid "invalid_billing_plan"
-msgstr "Plan de facturation invalide."
 
-msgid "invalid_stripe_webhook"
-msgstr "Webhook Stripe invalide."
 
 msgid "invalid_github_webhook"
 msgstr "Webhook GitHub invalide."
@@ -372,71 +354,29 @@ msgstr "Webhook GitHub invalide."
 msgid "invalid_webhook_payload"
 msgstr "Charge utile du webhook invalide."
 
-msgid "stripe_billing_available_after_upgrade"
-msgstr "La facturation Stripe est disponible après une mise à niveau."
 
-msgid "stripe_billing_not_configured"
-msgstr "La facturation Stripe n'est pas configurée."
 
-msgid "workspace_subscription_not_found"
-msgstr "Abonnement de l'espace de travail introuvable."
 
 msgid "workspace_member_not_found"
 msgstr "Membre de l'espace de travail introuvable."
 
-msgid "agent_not_found"
-msgstr "Agent introuvable."
 
-msgid "invalid_agent_name"
-msgstr "Nom d'agent invalide."
 
-msgid "invalid_agent_card_path"
-msgstr "Chemin de carte d'agent invalide."
 
-msgid "agent_card_pending"
-msgstr "La carte de l'agent n'a pas encore été récupérée depuis une instance."
 
-msgid "invalid_agent_version"
-msgstr "Version d'agent invalide."
 
-msgid "invalid_agent_lb_strategy"
-msgstr "Stratégie d'équilibrage de charge invalide."
 
-msgid "failed_agent_request"
-msgstr "Impossible de traiter la requête agent."
 
-msgid "instance_not_found"
-msgstr "Instance introuvable."
 
-msgid "invalid_instance_id"
-msgstr "Identifiant d'instance invalide."
 
-msgid "failed_instance_request"
-msgstr "Impossible de traiter la requête d'instance."
 
-msgid "check_not_found"
-msgstr "Vérification de santé introuvable."
 
-msgid "invalid_check_id"
-msgstr "Identifiant de vérification de santé invalide."
 
-msgid "unsupported_check_type"
-msgstr "Type de vérification non pris en charge. Utilisez ttl, http ou tcp."
 
-msgid "invalid_check_path"
-msgstr "Le chemin de la vérification HTTP doit commencer par / et ne pas contenir d'espaces."
 
-msgid "invalid_check_scheme"
-msgstr "Le schéma de la vérification HTTP doit être http ou https."
 
-msgid "invalid_check_timing"
-msgstr "Délais de vérification invalides. Les vérifications TTL exigent un ttl, et le délai d'attente doit être inférieur à l'intervalle."
 
-msgid "check_not_reportable"
-msgstr "Seules les vérifications TTL peuvent être signalées."
 
-msgid "failed_check_request"
-msgstr "Impossible de traiter la requête de vérification de santé."
 
 msgid "integration_not_found"
 msgstr "Intégration introuvable."
@@ -459,23 +399,13 @@ msgstr "Clé invalide."
 msgid "failed_kv_request"
 msgstr "Impossible de traiter la requête de clé."
 
-msgid "waiting_for_first_check"
-msgstr "En attente de la première vérification"
 
 msgid "waiting_for_first_report"
 msgstr "En attente du premier rapport"
 
-msgid "identity_not_found"
-msgstr "Identité d'agent introuvable."
 
-msgid "identity_already_exists"
-msgstr "Une identité portant ce nom existe déjà pour cet agent."
 
-msgid "invalid_identity_config"
-msgstr "Les identités en authentification basique exigent un nom d'utilisateur, les clés API n'en ont pas."
 
-msgid "failed_identity_request"
-msgstr "Échec de la requête d'identité d'agent."
 
 msgid "unsupported_grant_type"
 msgstr "Type d'autorisation non pris en charge. Utilisez client_credentials."
@@ -507,14 +437,10 @@ msgstr "Échec du listage des événements."
 msgid "failed_get_event"
 msgstr "Échec de la lecture de l'événement."
 
-msgid "invalid_agent_identity"
-msgstr "Identité d'agent invalide."
 
 msgid "failed_a2a_request"
 msgstr "Échec de la requête A2A."
 
-msgid "failed_catalog_request"
-msgstr "Échec du chargement du catalogue d’agents."
 
 msgid "invalid_chat_id"
 msgstr "Identifiant de discussion invalide."

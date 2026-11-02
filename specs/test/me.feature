@@ -24,12 +24,12 @@ Feature: Who am I
   @mutates
   Scenario: A workspace access key resolves to that key and its permissions
     Given the run's workspace exists
-    And an access key with only CAN_LIST_AGENTS
+    And an access key with only CAN_LIST_KEY_VALUE
     When that key GETs /api/v1/me with X-Access-Key
     Then the response is 200
     And principalType is "access_key"
     And accessKey.workspaceId is the run's workspace id
-    And accessKey.permissions is exactly ["CAN_LIST_AGENTS"]
+    And accessKey.permissions is exactly ["CAN_LIST_KEY_VALUE"]
 
   # ---------------------------------------------------------------------------
   # Bad or missing credentials

@@ -1,6 +1,6 @@
 Feature: Workspaces
 
-  A workspace holds a team's agents, keys and rules. Whoever creates one owns
+  A workspace holds a team's keys, integrations and data. Whoever creates one owns
   it. A workspace is visible only to its members, and the id of a workspace
   you don't belong to must not tell you anything about it.
 
@@ -80,7 +80,7 @@ Feature: Workspaces
   @mutates
   Scenario: Deleting a workspace removes it and everything in it
     Given the user created a workspace named "spec-<runId>-doomed"
-    And it has an agent "spec-<runId>-echo" and a kv key "spec/<runId>"
+    And it has a kv key "spec/<runId>" and an integration
     When the user DELETEs that workspace
     Then the response is 204
     And reading the workspace returns 404
@@ -122,9 +122,9 @@ Feature: Workspaces
   @mutates
   Scenario: Deleting a workspace revokes its access keys
     Given the user created a workspace named "spec-<runId>-doomed"
-    And an access key in it with only CAN_LIST_AGENTS
+    And an access key in it with only CAN_LIST_KEY_VALUE
     When the user DELETEs that workspace
-    Then that key listing agents anywhere gets 401
+    Then that key listing keys anywhere gets 401
 
   @mutates
   Scenario: An access key with the delete grant can delete its own workspace

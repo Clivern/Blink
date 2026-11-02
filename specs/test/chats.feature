@@ -121,7 +121,7 @@ Feature: Assistant chats
   @mutates @ai
   Scenario: A second message waits for the first answer
     Given the user started a chat
-    And the user sent "Which agents are registered?" and has not read the stream yet
+    And the user sent "What keys are configured?" and has not read the stream yet
     When the user POSTs chats/<that chat's id>/messages with content "hello" while the first is answering
     Then the response is 409
     And the errorMessage is "The assistant is still answering the last message."
