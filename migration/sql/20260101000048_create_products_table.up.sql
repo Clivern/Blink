@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS products (
+	id UUID PRIMARY KEY,
+	sku VARCHAR(60) NOT NULL UNIQUE,
+	ean VARCHAR(20),
+	brand VARCHAR(120),
+	name VARCHAR(160) NOT NULL,
+	pack_size VARCHAR(60),
+	unit VARCHAR(20),
+	vat_class VARCHAR(10),
+	image_url VARCHAR(500),
+	is_active BOOLEAN DEFAULT true,
+	created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
+	updated_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
+);
+CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku);
+CREATE INDEX IF NOT EXISTS idx_products_name ON products(name);

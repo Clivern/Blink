@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS deliveries (
+	id UUID PRIMARY KEY,
+	order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE UNIQUE,
+	rider_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+	status VARCHAR(20) NOT NULL DEFAULT 'assigned',
+	assigned_at TIMESTAMP NULL,
+	delivered_at TIMESTAMP NULL,
+	created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
+	updated_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
+);
+CREATE INDEX IF NOT EXISTS idx_deliveries_rider ON deliveries(rider_user_id);

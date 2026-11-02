@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS orders (
+	id UUID PRIMARY KEY,
+	user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	hub_id UUID NOT NULL REFERENCES hubs(id) ON DELETE CASCADE,
+	address_id UUID REFERENCES addresses(id) ON DELETE SET NULL,
+	status VARCHAR(30) NOT NULL DEFAULT 'received',
+	subtotal_cents INT NOT NULL DEFAULT 0,
+	delivery_fee_cents INT NOT NULL DEFAULT 0,
+	discount_cents INT NOT NULL DEFAULT 0,
+	total_cents INT NOT NULL DEFAULT 0,
+	vat_cents INT NOT NULL DEFAULT 0,
+	promised_by TIMESTAMP NULL,
+	created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
+	updated_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
+);
+CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_orders_hub ON orders(hub_id, status);
