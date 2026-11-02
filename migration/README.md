@@ -177,242 +177,6 @@ Every table has a UUID `id` primary key. Tables suffixed `_meta` are key/value e
 - Unique: `(workspace_id, key)`
 - Index: `idx_workspace_kv_expires_at` on `(expires_at)`
 
-## Billing
-
-### `subscriptions`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `workspace_id` | UUID | no |  | → `workspaces.id` (cascade) |
-| `provider_customer_id` | VARCHAR(200) | yes |  |  |
-| `ai_tokens_balance` | BIGINT | no | `0` |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(workspace_id)`
-
-### `subscriptions_meta`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `subscription_id` | UUID | no |  | → `subscriptions.id` (cascade) |
-| `key` | VARCHAR(60) | no |  |  |
-| `value` | JSONB | yes |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(subscription_id, key)`
-
-### `usage`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `workspace_id` | UUID | no |  | → `workspaces.id` (cascade) |
-| `type` | VARCHAR(60) | no |  |  |
-| `quantity` | BIGINT | no | `1` |  |
-| `unit` | VARCHAR(20) | yes |  |  |
-| `period_start` | TIMESTAMP | no |  |  |
-| `period_end` | TIMESTAMP | no |  |  |
-| `meta` | JSONB | yes |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(workspace_id, type, period_start)`
-
-### `workspace_token_purchases`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `workspace_id` | UUID | no |  | → `workspaces.id` (cascade) |
-| `stripe_session_id` | VARCHAR(200) | no |  | unique |
-| `amount_cents` | BIGINT | no |  |  |
-| `tokens` | BIGINT | no |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Index: `idx_workspace_token_purchases_workspace_id` on `(workspace_id)`
-
-## Agents
-
-### `agents`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `workspace_id` | UUID | no |  | → `workspaces.id` (cascade) |
-| `name` | VARCHAR(100) | no |  |  |
-| `card` | JSONB | no |  |  |
-| `card_checksum` | VARCHAR(64) | no |  |  |
-| `version` | VARCHAR(40) | no |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(workspace_id, name)`
-
-### `agents_meta`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `agent_id` | UUID | no |  | → `agents.id` (cascade) |
-| `key` | VARCHAR(60) | no |  |  |
-| `value` | JSONB | yes |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(agent_id, key)`
-
-### `agent_instances`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `agent_id` | UUID | no |  | → `agents.id` (cascade) |
-| `instance_id` | VARCHAR(100) | no |  |  |
-| `address` | VARCHAR(255) | no |  |  |
-| `port` | INTEGER | no |  |  |
-| `scheme` | VARCHAR(10) | no | `'http'` | how Blink reaches the instance's A2A endpoint |
-| `path` | VARCHAR(255) | no | `''` | A2A endpoint path, such as `/a2a/v1` |
-| `meta` | JSONB | yes |  |  |
-| `status` | VARCHAR(20) | no | `'passing'` |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(agent_id, instance_id)`
-
-### `agent_instances_meta`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `agent_instance_id` | UUID | no |  | → `agent_instances.id` (cascade) |
-| `key` | VARCHAR(60) | no |  |  |
-| `value` | JSONB | yes |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(agent_instance_id, key)`
-
-### `agent_checks`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `agent_id` | UUID | no |  | → `agents.id` (cascade) |
-| `check_id` | VARCHAR(100) | no |  |  |
-| `name` | VARCHAR(120) | no |  |  |
-| `type` | VARCHAR(20) | no |  |  |
-| `definition` | JSONB | no |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(agent_id, check_id)`
-- Index: `idx_agent_checks_agent_id` on `(agent_id)`
-
-### `agent_skills`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `workspace_id` | UUID | no |  | → `workspaces.id` (cascade) |
-| `agent_id` | UUID | no |  | → `agents.id` (cascade) |
-| `skill_id` | VARCHAR(120) | no |  |  |
-| `name` | VARCHAR(120) | no |  |  |
-| `description` | TEXT | yes |  |  |
-| `tags` | JSONB | yes |  |  |
-| `input_modes` | JSONB | no | `'[]'` | skill modes, or the card defaults |
-| `output_modes` | JSONB | no | `'[]'` | skill modes, or the card defaults |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(agent_id, skill_id)`
-- Index: `idx_agent_skills_workspace_id_skill_id` on `(workspace_id, skill_id)`
-
-### `catalog_changes`
-
-Change feed for `GET /watch/catalog`. Uses a `BIGSERIAL` id instead of a UUID so clients can use it as an ordered cursor.
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | BIGSERIAL | no |  | primary key, cursor value |
-| `workspace_id` | UUID | no |  | → `workspaces.id` (cascade) |
-| `agent_name` | VARCHAR(100) | no |  |  |
-| `kind` | VARCHAR(20) | no |  | `upserted` or `deleted` |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Index: `idx_catalog_changes_workspace_id_id` on `(workspace_id, id)`
-
-### `agent_identity`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `agent_id` | UUID | no |  | → `agents.id` (cascade) |
-| `name` | VARCHAR(100) | no |  |  |
-| `type` | VARCHAR(30) | no |  |  |
-| `config` | JSONB | no |  |  |
-| `is_active` | BOOLEAN | no | `TRUE` |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(agent_id, name)`
-- Index: `idx_agent_identity_agent_id` on `(agent_id)`
-
-### `agent_identity_tokens`
-
-Access tokens issued to `client_credentials` identities by `POST /api/v1/public/oauth/token`.
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `identity_id` | UUID | no |  | → `agent_identity.id` (cascade) |
-| `token_hash` | VARCHAR(64) | no |  | SHA-256 hex of the token, unique |
-| `expires_at` | TIMESTAMP | no |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Index: `idx_agent_identity_tokens_identity_id` on `(identity_id)`
-- Index: `idx_agent_identity_tokens_expires_at` on `(expires_at)`
-
-### `health_checks`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `instance_id` | UUID | no |  | → `agent_instances.id` (cascade) |
-| `check_id` | VARCHAR(100) | no |  |  |
-| `name` | VARCHAR(120) | no |  |  |
-| `type` | VARCHAR(20) | no |  |  |
-| `source` | VARCHAR(20) | no | `'agent'` | agent: copied from an agent check template |
-| `status` | VARCHAR(20) | no | `'critical'` |  |
-| `definition` | JSONB | yes |  |  |
-| `output` | TEXT | yes |  |  |
-| `ttl_expires_at` | TIMESTAMP | yes |  |  |
-| `last_run_at` | TIMESTAMP | yes |  |  |
-| `next_run_at` | TIMESTAMP | yes |  | when the runner should next probe an http or tcp check |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(instance_id, check_id)`
-- Index: `idx_health_checks_instance_id` on `(instance_id)`
-- Index: `idx_health_checks_ttl_expires_at` on `(ttl_expires_at)` where `type = 'ttl'`
-- Index: `idx_health_checks_next_run_at` on `(next_run_at)` where `next_run_at IS NOT NULL`
-
-### `health_checks_meta`
-
-| Column | Type | Nullable | Default | Notes |
-|---|---|---|---|---|
-| `id` | UUID | no |  | primary key |
-| `health_check_id` | UUID | no |  | → `health_checks.id` (cascade) |
-| `key` | VARCHAR(60) | no |  |  |
-| `value` | JSONB | yes |  |  |
-| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
-| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
-
-- Unique: `(health_check_id, key)`
-
 ## Policy / Ops
 
 ### `integrations`
@@ -480,7 +244,7 @@ Access tokens issued to `client_credentials` identities by `POST /api/v1/public/
 |---|---|---|---|---|
 | `id` | UUID | no |  | primary key |
 | `workspace_id` | UUID | no |  | → `workspaces.id` (cascade) |
-| `type` | VARCHAR(60) | no |  | `audit.log`, `agent.health.changed`, `agent.instance.changed`, `catalog.changed`, `system.health.degraded` |
+| `type` | VARCHAR(60) | no |  | `audit.log`, `system.health.degraded` |
 | `actor_id` | UUID | yes |  |  |
 | `actor_name` | VARCHAR(100) | yes |  |  |
 | `actor_type` | VARCHAR(20) | yes |  | `user`, `access_key`, `system` |
@@ -549,6 +313,286 @@ A user question or an assistant answer in a chat.
 
 - Index: `idx_kv_expires_at` on `(expires_at)`
 
+## Grocery
+
+Shopper roles reuse `users` (`customer`, `picker`, `rider`). Stock is per hub, never global.
+`addresses.hub_id`, `orders.address_id`, `pick_tasks.picker_user_id` and
+`deliveries.rider_user_id` use `ON DELETE SET NULL` instead of cascade so history survives.
+
+### `categories`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `parent_id` | UUID | yes |  | → `categories.id` (cascade), NULL is top level |
+| `name` | VARCHAR(120) | no |  |  |
+| `slug` | VARCHAR(120) | no |  | unique |
+| `position` | INT | no | `0` | sort order among siblings |
+| `is_active` | BOOLEAN | yes | `true` |  |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_categories_parent` on `(parent_id)`
+
+### `products`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `sku` | VARCHAR(60) | no |  | unique |
+| `ean` | VARCHAR(20) | yes |  |  |
+| `brand` | VARCHAR(120) | yes |  |  |
+| `name` | VARCHAR(160) | no |  |  |
+| `pack_size` | VARCHAR(60) | yes |  | e.g. `1L`, `500g` |
+| `unit` | VARCHAR(20) | yes |  |  |
+| `vat_class` | VARCHAR(10) | yes |  |  |
+| `image_url` | VARCHAR(500) | yes |  |  |
+| `is_active` | BOOLEAN | yes | `true` | deactivation keeps order history |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_products_sku` on `(sku)`
+- Index: `idx_products_name` on `(name)`
+
+### `product_categories`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `product_id` | UUID | no |  | → `products.id` (cascade) |
+| `category_id` | UUID | no |  | → `categories.id` (cascade) |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Unique: `(product_id, category_id)`
+- Index: `idx_product_categories_product` on `(product_id)`
+- Index: `idx_product_categories_category` on `(category_id)`
+
+### `prices`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `product_id` | UUID | no |  | → `products.id` (cascade) |
+| `price_cents` | INT | no |  |  |
+| `valid_from` | TIMESTAMP | no | `now() UTC` |  |
+| `valid_to` | TIMESTAMP | yes |  | NULL is the current price |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_prices_product` on `(product_id, valid_from)`
+
+### `hubs`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `name` | VARCHAR(120) | no |  |  |
+| `city` | VARCHAR(120) | no |  |  |
+| `street` | VARCHAR(255) | yes |  |  |
+| `lat` | DOUBLE PRECISION | no |  |  |
+| `lng` | DOUBLE PRECISION | no |  |  |
+| `radius_m` | INT | no | `3000` | delivery zone radius |
+| `status` | VARCHAR(20) | no | `'open'` | `open` / `closed` |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_hubs_city` on `(city)`
+- Index: `idx_hubs_geo` on `(lat, lng)`
+
+### `hub_assortment`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `hub_id` | UUID | no |  | → `hubs.id` (cascade) |
+| `product_id` | UUID | no |  | → `products.id` (cascade) |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Unique: `(hub_id, product_id)`
+- Index: `idx_hub_assortment_hub` on `(hub_id)`
+- Index: `idx_hub_assortment_product` on `(product_id)`
+
+### `hub_stock`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `hub_id` | UUID | no |  | → `hubs.id` (cascade) |
+| `product_id` | UUID | no |  | → `products.id` (cascade) |
+| `quantity` | INT | no | `0` | physical count on shelf |
+| `reserved` | INT | no | `0` | held by open baskets |
+| `reorder_point` | INT | no | `0` | restock at or below this |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Unique: `(hub_id, product_id)`
+- Index: `idx_hub_stock_hub` on `(hub_id)`
+
+### `stock_movements`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `hub_id` | UUID | no |  | → `hubs.id` (cascade) |
+| `product_id` | UUID | no |  | → `products.id` (cascade) |
+| `qty_change` | INT | no |  | signed delta, immutable ledger |
+| `reason` | VARCHAR(30) | no |  | `inbound` / `sale` / `waste` / `correction` |
+| `ref` | VARCHAR(120) | yes |  | e.g. order id |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_stock_movements_hub_product` on `(hub_id, product_id)`
+
+### `addresses`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `user_id` | UUID | no |  | → `users.id` (cascade) |
+| `label` | VARCHAR(60) | yes |  | e.g. `home` |
+| `street` | VARCHAR(255) | no |  |  |
+| `city` | VARCHAR(120) | yes |  |  |
+| `postal_code` | VARCHAR(20) | yes |  |  |
+| `lat` | DOUBLE PRECISION | no |  |  |
+| `lng` | DOUBLE PRECISION | no |  |  |
+| `hub_id` | UUID | yes |  | → `hubs.id` (set null), serving dark store |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_addresses_user` on `(user_id)`
+
+### `carts`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `user_id` | UUID | no |  | → `users.id` (cascade), one cart per user |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+### `cart_items`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `cart_id` | UUID | no |  | → `carts.id` (cascade) |
+| `product_id` | UUID | no |  | → `products.id` (cascade) |
+| `hub_id` | UUID | no |  | → `hubs.id` (cascade) |
+| `quantity` | INT | no | `1` |  |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Unique: `(cart_id, product_id)`
+- Index: `idx_cart_items_cart` on `(cart_id)`
+
+### `orders`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `user_id` | UUID | no |  | → `users.id` (cascade) |
+| `hub_id` | UUID | no |  | → `hubs.id` (cascade) |
+| `address_id` | UUID | yes |  | → `addresses.id` (set null) |
+| `status` | VARCHAR(30) | no | `'received'` | `received` → `picking` → `packed` → `handed_to_rider` → `delivered` / `cancelled` |
+| `subtotal_cents` | INT | no | `0` |  |
+| `delivery_fee_cents` | INT | no | `0` |  |
+| `discount_cents` | INT | no | `0` |  |
+| `total_cents` | INT | no | `0` |  |
+| `vat_cents` | INT | no | `0` |  |
+| `promised_by` | TIMESTAMP | yes |  | delivery promise shown at checkout |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_orders_user` on `(user_id)`
+- Index: `idx_orders_hub` on `(hub_id, status)`
+
+### `order_items`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `order_id` | UUID | no |  | → `orders.id` (cascade) |
+| `product_id` | UUID | no |  | → `products.id` (cascade) |
+| `quantity` | INT | no |  | ordered |
+| `price_cents` | INT | no |  | snapshot at order time |
+| `picked_quantity` | INT | no | `0` | actually found on shelf |
+| `substitution` | VARCHAR(20) | no | `'none'` | `none` / `substituted` / `refunded` |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_order_items_order` on `(order_id)`
+
+### `pick_tasks`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `order_id` | UUID | no |  | → `orders.id` (cascade), one task per order |
+| `picker_user_id` | UUID | yes |  | → `users.id` (set null) |
+| `status` | VARCHAR(20) | no | `'pending'` | `pending` / `assigned` / `picking` / `done` |
+| `started_at` | TIMESTAMP | yes |  |  |
+| `finished_at` | TIMESTAMP | yes |  |  |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_pick_tasks_status` on `(status)`
+
+### `payments`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `order_id` | UUID | no |  | → `orders.id` (cascade), one charge per order |
+| `provider` | VARCHAR(30) | no |  | e.g. `stripe` |
+| `amount_cents` | INT | no |  |  |
+| `status` | VARCHAR(20) | no | `'pending'` | `pending` / `paid` / `failed` / `refunded` |
+| `paid_at` | TIMESTAMP | yes |  |  |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_payments_status` on `(status)`
+
+### `promotions`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `code` | VARCHAR(60) | no |  | unique, e.g. `WELCOME10` |
+| `kind` | VARCHAR(20) | no |  | `percent` / `amount` |
+| `value` | INT | no |  | percent points or cents |
+| `min_basket_cents` | INT | no | `0` |  |
+| `starts_at` | TIMESTAMP | yes |  |  |
+| `ends_at` | TIMESTAMP | yes |  |  |
+| `max_redemptions` | INT | yes |  | NULL is unlimited |
+| `is_active` | BOOLEAN | yes | `true` |  |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+### `voucher_redemptions`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `promotion_id` | UUID | no |  | → `promotions.id` (cascade) |
+| `order_id` | UUID | no |  | → `orders.id` (cascade), one voucher per order |
+| `user_id` | UUID | no |  | → `users.id` (cascade) |
+| `amount_cents` | INT | no |  | discount actually granted |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_voucher_redemptions_promotion` on `(promotion_id)`
+
+### `deliveries`
+
+| Column | Type | Nullable | Default | Notes |
+|---|---|---|---|---|
+| `id` | UUID | no |  | primary key |
+| `order_id` | UUID | no |  | → `orders.id` (cascade), one ride per order |
+| `rider_user_id` | UUID | yes |  | → `users.id` (set null) |
+| `status` | VARCHAR(20) | no | `'assigned'` | `assigned` / `at_door` / `delivered` / `failed` |
+| `assigned_at` | TIMESTAMP | yes |  |  |
+| `delivered_at` | TIMESTAMP | yes |  |  |
+| `created_at` | TIMESTAMP | yes | `now() UTC` |  |
+| `updated_at` | TIMESTAMP | yes | `now() UTC` |  |
+
+- Index: `idx_deliveries_rider` on `(rider_user_id)`
+
 ## Relationships
 
 ```mermaid
@@ -565,12 +609,6 @@ erDiagram
     workspaces ||--o{ user_invites : has
     workspaces ||--o{ access_keys : has
     workspaces ||--o{ workspace_kv : has
-    workspaces ||--o{ subscriptions : has
-    workspaces ||--o{ usage : has
-    workspaces ||--o{ workspace_token_purchases : has
-    workspaces ||--o{ agents : has
-    workspaces ||--o{ catalog_changes : has
-    workspaces ||--o{ agent_skills : has
     workspaces ||--o{ integrations : has
     workspaces |o--o{ async_tasks : has
     workspaces ||--o{ events : has
@@ -578,17 +616,37 @@ erDiagram
     users ||--o{ ai_assistant_chats : starts
     ai_assistant_chats ||--o{ ai_assistant_messages : has
 
-    subscriptions ||--o{ subscriptions_meta : has
     integrations ||--o{ integrations_meta : has
     async_tasks ||--o{ async_tasks_meta : has
 
-    agents ||--o{ agents_meta : has
-    agents ||--o{ agent_instances : runs
-    agents ||--o{ agent_checks : defines
-    agents ||--o{ agent_identity : has
-    agent_identity ||--o{ agent_identity_tokens : issues
-    agents ||--o{ agent_skills : has
-    agent_instances ||--o{ agent_instances_meta : has
-    agent_instances ||--o{ health_checks : reports
-    health_checks ||--o{ health_checks_meta : has
+
+    categories ||--o{ categories : nests
+    products ||--o{ product_categories : has
+    categories ||--o{ product_categories : has
+    products ||--o{ prices : has
+    hubs ||--o{ hub_assortment : carries
+    products ||--o{ hub_assortment : stocked
+    hubs ||--o{ hub_stock : holds
+    products ||--o{ hub_stock : counted
+    hubs ||--o{ stock_movements : logs
+    products ||--o{ stock_movements : moves
+    users ||--o{ addresses : has
+    hubs ||--o{ addresses : serves
+    users ||--o{ carts : holds
+    carts ||--o{ cart_items : has
+    products ||--o{ cart_items : lines
+    hubs ||--o{ cart_items : fulfills
+    users ||--o{ orders : places
+    hubs ||--o{ orders : fulfills
+    addresses ||--o{ orders : ships
+    orders ||--o{ order_items : has
+    products ||--o{ order_items : lines
+    orders ||--o{ pick_tasks : needs
+    users ||--o{ pick_tasks : picks
+    orders ||--o{ payments : charged
+    promotions ||--o{ voucher_redemptions : grants
+    orders ||--o{ voucher_redemptions : discounts
+    users ||--o{ voucher_redemptions : redeems
+    orders ||--o{ deliveries : rides
+    users ||--o{ deliveries : delivers
 ```
