@@ -33,12 +33,6 @@ export function formatCompact(value) {
   return `${+value.toFixed(2)}`
 }
 
-export function formatDuration(ms) {
-  if (ms >= 1000) return `${+(ms / 1000).toFixed(2)}s`
-  if (ms >= 10) return `${Math.round(ms)}ms`
-  return `${+ms.toFixed(1)}ms`
-}
-
 // Path for a column with a 4px rounded top and a square base.
 export function columnPath(x, y, width, height, radius = 4) {
   if (height <= 0) return ''

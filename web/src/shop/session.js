@@ -1,12 +1,8 @@
 import { defineStore } from 'pinia'
+import { loadJSON } from '@/utils/storage'
 
 const ACCOUNTS_KEY = 'blink.shop.accounts'
 const SESSION_KEY = 'blink.shop.session'
-
-function saved(key, fallback) {
-  const raw = localStorage.getItem(key)
-  return raw ? JSON.parse(raw) : fallback
-}
 
 async function digest(password) {
   const data = new TextEncoder().encode(password)
@@ -16,8 +12,8 @@ async function digest(password) {
 
 export const useShopSession = defineStore('shopSession', {
   state: () => ({
-    accounts: saved(ACCOUNTS_KEY, []),
-    userId: saved(SESSION_KEY, null),
+    accounts: loadJSON(ACCOUNTS_KEY, []),
+    userId: loadJSON(SESSION_KEY),
   }),
   getters: {
     user(state) {

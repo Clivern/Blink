@@ -1,20 +1,22 @@
 import { defineStore } from 'pinia'
 import { productBySku, DELIVERY_CENTS, FREE_DELIVERY_OVER } from '@/shop/catalog'
+import { loadJSON } from '@/utils/storage'
 
 const CART_KEY = 'blink.shop.cart'
 const ORDER_KEY = 'blink.shop.orders'
 const ADDRESS_KEY = 'blink.shop.address'
 
-function saved(key, fallback) {
-  const raw = localStorage.getItem(key)
-  return raw ? JSON.parse(raw) : fallback
+export const ORDER_STATUSES = ['placed', 'packing', 'delivering', 'delivered']
+
+export function orderStatus(order) {
+  return order.status ?? 'placed'
 }
 
 export const useShopCart = defineStore('shopCart', {
   state: () => ({
-    lines: saved(CART_KEY, []),
-    orders: saved(ORDER_KEY, []),
-    address: saved(ADDRESS_KEY, 'Oranienstraße 12, Kreuzberg'),
+    lines: loadJSON(CART_KEY, []),
+    orders: loadJSON(ORDER_KEY, []),
+    address: loadJSON(ADDRESS_KEY, 'Oranienstraße 12, Kreuzberg'),
   }),
   getters: {
     count(state) {
@@ -77,6 +79,7 @@ export const useShopCart = defineStore('shopCart', {
         delivery: this.delivery,
         total: this.total,
         eta: '10–15 min',
+        status: 'placed',
         ...details,
       }
       this.orders.unshift(order)
@@ -84,6 +87,10 @@ export const useShopCart = defineStore('shopCart', {
       this.lines = []
       this.persist()
       return order
+    },
+    setStatus(id, status) {
+      this.orders.find((order) => order.id === id).status = status
+      localStorage.setItem(ORDER_KEY, JSON.stringify(this.orders))
     },
   },
 })

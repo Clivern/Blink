@@ -8,12 +8,8 @@ const api = axios.create({
 
 // The user's chosen language, sent so API messages come back translated
 function localeHeaders() {
-  try {
-    const locale = typeof localStorage !== 'undefined' && localStorage.getItem('_flocale')
-    if (locale === 'en' || locale === 'fr') {
-      return { 'Accept-Language': locale }
-    }
-  } catch (_) {}
+  const locale = localStorage.getItem('_flocale')
+  if (locale === 'en' || locale === 'fr') return { 'Accept-Language': locale }
   return {}
 }
 
@@ -47,12 +43,6 @@ api.interceptors.response.use(
   }
 )
 
-// API endpoints
-export const health_api = {
-  check: () => api.get('public/_health'),
-  ready: () => api.get('public/_ready'),
-}
-
 // API endpoints for the current user's session and profile
 export const auth_api = {
   logout: () => api.post('public/action/logout'),
@@ -65,12 +55,6 @@ export const auth_api = {
 export const setup_api = {
   install: (data) => api.post('public/action/setup', data),
   checkInstalled: () => api.get('public/action/setup/status'),
-}
-
-// API endpoints for settings
-export const settings_api = {
-  getSettings: () => api.get('/action/settings'),
-  updateSettings: (data) => api.put('/action/settings', data),
 }
 
 // API endpoints for workspaces (projects)
@@ -151,15 +135,6 @@ async function streamEvents(url, data, onEvent) {
       if (name && payload) onEvent(name, JSON.parse(payload))
     }
   }
-}
-
-// API endpoints for the current user's workspace notifications
-export const notification_api = {
-  list: (workspaceId, params) => api.get(`/workspaces/${workspaceId}/notifications`, { params }),
-  countUnread: (workspaceId) => api.get(`/workspaces/${workspaceId}/notifications/unread`),
-  markRead: (workspaceId, id) => api.post(`/workspaces/${workspaceId}/notifications/${id}/read`),
-  markAllRead: (workspaceId) => api.post(`/workspaces/${workspaceId}/notifications/read`),
-  dismiss: (workspaceId, id) => api.post(`/workspaces/${workspaceId}/notifications/${id}/dismiss`),
 }
 
 // Keys may contain slashes, so they are not encoded

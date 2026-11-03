@@ -4,34 +4,18 @@ const OSS = 'oss'
 const SAAS = 'saas'
 
 let edition = OSS
-let loaded = false
-let pending = null
+let loading = null
 
-export async function loadEdition() {
-  if (loaded) {
-    return edition
-  }
-  if (pending) {
-    return pending
-  }
-
-  pending = setup_api
+export function loadEdition() {
+  loading ??= setup_api
     .checkInstalled()
     .then((res) => {
-      edition = res.data?.edition === SAAS ? SAAS : OSS
-      loaded = true
+      edition = res.data.edition === SAAS ? SAAS : OSS
       return edition
     })
-    .catch(() => {
-      edition = OSS
-      loaded = true
-      return edition
-    })
-    .finally(() => {
-      pending = null
-    })
+    .catch(() => edition)
 
-  return pending
+  return loading
 }
 
 export function isSaaS() {

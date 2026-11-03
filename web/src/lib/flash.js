@@ -4,7 +4,10 @@ const message = ref(null)
 const duration = ref(2500)
 let timer = null
 
-function show(msg, ms = 2500) {
+export const flashMessage = message
+export const flashDuration = duration
+
+export function showFlash(msg, ms = 2500) {
   clearTimeout(timer)
   message.value = msg
   duration.value = ms
@@ -13,16 +16,7 @@ function show(msg, ms = 2500) {
   }, ms)
 }
 
-function clear() {
+export function clearFlash() {
   clearTimeout(timer)
   message.value = null
 }
-
-export function useFlash() {
-  return { message, duration, show, clear }
-}
-
-export const flashMessage = message
-export const flashDuration = duration
-export const showFlash = show
-export const clearFlash = clear

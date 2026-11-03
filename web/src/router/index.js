@@ -95,6 +95,56 @@ const routes = [
     },
   },
   {
+    path: '/manage',
+    component: () => import('@/views/manage/ManageLayout.vue'),
+    meta: { title: 'Store admin' },
+    children: [
+      { path: '', redirect: { name: 'ManageDashboard' } },
+      {
+        path: 'dashboard',
+        name: 'ManageDashboard',
+        component: () => import('@/views/manage/ManageDashboard.vue'),
+        meta: { title: 'Store dashboard' },
+      },
+      {
+        path: 'categories',
+        name: 'ManageCategories',
+        component: () => import('@/views/manage/ManageCategories.vue'),
+        meta: { title: 'Categories' },
+      },
+      {
+        path: 'products',
+        name: 'ManageProducts',
+        component: () => import('@/views/manage/ManageProducts.vue'),
+        meta: { title: 'Products' },
+      },
+      {
+        path: 'products/:sku',
+        name: 'ManageProduct',
+        component: () => import('@/views/manage/ManageProduct.vue'),
+        meta: { title: 'Product' },
+      },
+      {
+        path: 'customers',
+        name: 'ManageCustomers',
+        component: () => import('@/views/manage/ManageCustomers.vue'),
+        meta: { title: 'Customers' },
+      },
+      {
+        path: 'orders',
+        name: 'ManageOrders',
+        component: () => import('@/views/manage/ManageOrders.vue'),
+        meta: { title: 'Orders' },
+      },
+      {
+        path: 'orders/:id',
+        name: 'ManageOrder',
+        component: () => import('@/views/manage/ManageOrder.vue'),
+        meta: { title: 'Order' },
+      },
+    ],
+  },
+  {
     path: '/',
     component: () => import('@/views/shop/ShopLayout.vue'),
     meta: { shop: true, title: 'Shop' },

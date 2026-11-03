@@ -1,7 +1,11 @@
+import { reactive } from 'vue'
+
+const CATALOG_KEY = 'blink.shop.catalog'
+
 export const DELIVERY_CENTS = 190
 export const FREE_DELIVERY_OVER = 2900
 
-export const categories = [
+const seedCategories = [
   { slug: 'deals', name: 'Deals', emoji: '⚡', tint: '#ffe1ee', children: [] },
   {
     slug: 'fruit',
@@ -95,7 +99,7 @@ export const categories = [
   },
 ]
 
-export const products = [
+const seedProducts = [
   {
     sku: 'bananas',
     name: 'Bananas',
@@ -509,6 +513,92 @@ export const products = [
     tags: [],
   },
 ]
+
+const saved = JSON.parse(localStorage.getItem(CATALOG_KEY)) || {
+  categories: seedCategories,
+  products: seedProducts,
+}
+
+export const categories = reactive(saved.categories)
+export const products = reactive(saved.products)
+
+function persist() {
+  localStorage.setItem(CATALOG_KEY, JSON.stringify({ categories, products }))
+}
+
+export function slugify(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+export function isCategorySlugTaken(slug) {
+  return categories.some(
+    (category) =>
+      category.slug === slug || category.children.some((child) => child.slug === slug)
+  )
+}
+
+export function isSkuTaken(sku) {
+  return products.some((product) => product.sku === sku)
+}
+
+export function categoryUsage(slug) {
+  const category = categories.find((item) => item.slug === slug)
+  const subcategories = category ? category.children.length : 0
+  return products.filter((product) => product.category === slug).length + subcategories
+}
+
+export function addCategory({ name, emoji, tint, parent }) {
+  const slug = slugify(name)
+  const category = { slug, name, emoji, tint }
+
+  if (parent) {
+    categories.find((item) => item.slug === parent).children.push(category)
+  } else {
+    categories.push({ ...category, children: [] })
+  }
+  persist()
+}
+
+export function findCategory(slug) {
+  for (const category of categories) {
+    if (category.slug === slug) return category
+
+    const child = category.children.find((item) => item.slug === slug)
+    if (child) return child
+  }
+}
+
+export function updateCategory(slug, { name, emoji, tint }) {
+  Object.assign(findCategory(slug), { name, emoji, tint })
+  persist()
+}
+
+export function deleteCategory(slug) {
+  const parent = categories.find((item) => item.children.some((child) => child.slug === slug))
+  const list = parent ? parent.children : categories
+  list.splice(list.findIndex((item) => item.slug === slug), 1)
+  persist()
+}
+
+export function addProduct(product) {
+  products.push(product)
+  persist()
+}
+
+export function updateProduct(sku, changes) {
+  Object.assign(productBySku(sku), changes)
+  persist()
+}
+
+export function deleteProduct(sku) {
+  products.splice(products.findIndex((product) => product.sku === sku), 1)
+  persist()
+}
 
 export function euros(cents) {
   const amount = (cents / 100).toFixed(2).replace('.', ',')

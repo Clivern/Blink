@@ -1,58 +1,27 @@
 const USER_STORAGE_KEY = 'blink_user'
 const WORKSPACE_STORAGE_KEY = 'blink_workspace'
 
-export const loadUserFromStorage = () => {
-  try {
-    const stored = localStorage.getItem(USER_STORAGE_KEY)
-    return stored ? JSON.parse(stored) : null
-  } catch (err) {
-    console.error('Failed to load user from localStorage:', err)
-    return null
-  }
+export const loadJSON = (key, fallback = null) => {
+  const stored = localStorage.getItem(key)
+  return stored ? JSON.parse(stored) : fallback
 }
+
+export const loadUserFromStorage = () => loadJSON(USER_STORAGE_KEY)
 
 export const saveUserToStorage = (userData) => {
-  try {
-    if (userData) {
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData))
-    }
-  } catch (err) {
-    console.error('Failed to save user to localStorage:', err)
+  if (userData) {
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userData))
   }
 }
 
-export const removeUserFromStorage = () => {
-  try {
-    localStorage.removeItem(USER_STORAGE_KEY)
-  } catch (err) {
-    console.error('Failed to clear user from localStorage:', err)
-  }
-}
+export const removeUserFromStorage = () => localStorage.removeItem(USER_STORAGE_KEY)
 
-export const loadWorkspaceFromStorage = () => {
-  try {
-    const stored = localStorage.getItem(WORKSPACE_STORAGE_KEY)
-    return stored ? JSON.parse(stored) : null
-  } catch (err) {
-    console.error('Failed to load workspace from localStorage:', err)
-    return null
-  }
-}
+export const loadWorkspaceFromStorage = () => loadJSON(WORKSPACE_STORAGE_KEY)
 
 export const saveWorkspaceToStorage = (workspace) => {
-  try {
-    if (workspace) {
-      localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(workspace))
-    }
-  } catch (err) {
-    console.error('Failed to save workspace to localStorage:', err)
+  if (workspace) {
+    localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(workspace))
   }
 }
 
-export const removeWorkspaceFromStorage = () => {
-  try {
-    localStorage.removeItem(WORKSPACE_STORAGE_KEY)
-  } catch (err) {
-    console.error('Failed to clear workspace from localStorage:', err)
-  }
-}
+export const removeWorkspaceFromStorage = () => localStorage.removeItem(WORKSPACE_STORAGE_KEY)
