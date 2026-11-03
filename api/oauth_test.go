@@ -79,7 +79,7 @@ func TestUnitOAuthActions(t *testing.T) {
 		)
 
 		assert.Equal(t, http.StatusFound, w.Code)
-		assert.Contains(t, w.Header().Get("Location"), "/login?oauth_error=github")
+		assert.Contains(t, w.Header().Get("Location"), "/admin/login?oauth_error=github")
 	})
 
 	t.Run("google callback rejects a mismatched state", func(t *testing.T) {
@@ -94,7 +94,7 @@ func TestUnitOAuthActions(t *testing.T) {
 		)
 
 		assert.Equal(t, http.StatusFound, w.Code)
-		assert.Contains(t, w.Header().Get("Location"), "/login?oauth_error=google")
+		assert.Contains(t, w.Header().Get("Location"), "/admin/login?oauth_error=google")
 	})
 
 	t.Run(
@@ -121,6 +121,6 @@ func TestUnitOAuthActions(t *testing.T) {
 		)
 
 		assert.Equal(t, http.StatusFound, w.Code)
-		assert.Contains(t, w.Header().Get("Location"), "/login?oauth_error=facebook")
+		assert.Contains(t, w.Header().Get("Location"), "/admin/login?oauth_error=facebook")
 	})
 }

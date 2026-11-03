@@ -4,7 +4,7 @@
       <div class="flex justify-between h-14">
         <div class="flex items-center">
           <div class="shrink-0 flex items-center">
-            <router-link to="/" class="text-theme-text">
+            <router-link to="/admin/dashboard" class="text-theme-text">
               <AppLogo :alt="$t('common.logo_alt')" class="h-8 w-auto" />
             </router-link>
           </div>
@@ -98,7 +98,7 @@
               </div>
               <div class="py-1">
                 <router-link
-                  to="/profile"
+                  to="/admin/profile"
                   class="block px-4 py-2 text-sm text-theme-text hover:bg-theme-hover"
                   role="menuitem"
                   @click="open = false"
@@ -106,7 +106,7 @@
                   {{ $t('nav.profile') }}
                 </router-link>
                 <router-link
-                  to="/select-workspace"
+                  to="/admin/select-workspace"
                   class="block px-4 py-2 text-sm text-theme-text hover:bg-theme-hover"
                   role="menuitem"
                   @click="open = false"
@@ -173,16 +173,16 @@ const canManageWorkspaceNav = computed(() => {
 
 const navItems = computed(() => {
   return [
-    { to: '/dashboard', label: t('nav.dashboard') },
-    { to: '/kv', label: t('nav.kv') },
-    { to: '/members', label: 'Members', requiresManage: true },
-    { to: '/settings', label: t('nav.settings'), requiresManage: true },
-    { to: '/workspaces', label: 'Workspaces' },
+    { to: '/admin/dashboard', label: t('nav.dashboard') },
+    { to: '/admin/kv', label: t('nav.kv') },
+    { to: '/admin/members', label: 'Members', requiresManage: true },
+    { to: '/admin/settings', label: t('nav.settings'), requiresManage: true },
+    { to: '/admin/workspaces', label: 'Workspaces' },
   ].filter((item) => !item.requiresManage || canManageWorkspaceNav.value)
 })
 
 function isActive(path) {
-  return route.path === path || (path !== '/dashboard' && route.path.startsWith(path + '/'))
+  return route.path === path || (path !== '/admin/dashboard' && route.path.startsWith(path + '/'))
 }
 
 function checkMobile() {
@@ -203,7 +203,7 @@ async function handleLogout() {
   } catch (err) {
     console.error('Logout failed:', err)
   }
-  router.push('/login')
+  router.push('/admin/login')
 }
 
 function onClickOutside(event) {

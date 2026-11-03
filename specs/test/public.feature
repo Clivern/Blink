@@ -97,7 +97,7 @@ Feature: Public routes
     When a request GETs /api/v1/public/action/oauth/<provider>/callback?code=x&state=spec-<runId>
       with no state cookie
     Then the response is 302
-    And Location ends with "/login?oauth_error=<provider>"
+    And Location ends with "/admin/login?oauth_error=<provider>"
     And the response sets no _blink_session cookie
 
     Examples:

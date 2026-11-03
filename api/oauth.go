@@ -27,7 +27,7 @@ func (a *API) GitHubOAuthStartAction(w http.ResponseWriter, r *http.Request) {
 		log.Error().
 			Err(err).
 			Msg("Failed to generate oauth state")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=github"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=github"), http.StatusFound)
 		return
 	}
 
@@ -58,7 +58,7 @@ func (a *API) GitHubOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 		log.Error().
 			Err(err).
 			Msg("GitHub oauth exchange failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=github"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=github"), http.StatusFound)
 		return
 	}
 
@@ -67,7 +67,7 @@ func (a *API) GitHubOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 		log.Error().
 			Err(err).
 			Msg("GitHub oauth user fetch failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=github"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=github"), http.StatusFound)
 		return
 	}
 
@@ -76,7 +76,7 @@ func (a *API) GitHubOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 		log.Error().
 			Err(err).
 			Msg("GitHub oauth emails fetch failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=github"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=github"), http.StatusFound)
 		return
 	}
 
@@ -94,7 +94,7 @@ func (a *API) GitHubOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 		log.Error().
 			Err(err).
 			Msg("GitHub oauth login failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=github"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=github"), http.StatusFound)
 		return
 	}
 
@@ -108,7 +108,7 @@ func (a *API) GitHubOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 			Msg("Failed to attach pending workspace invites")
 	}
 
-	http.Redirect(w, r, util.AppURL("/login?oauth=github"), http.StatusFound)
+	http.Redirect(w, r, util.AppURL("/admin/login?oauth=github"), http.StatusFound)
 }
 
 // GoogleOAuthStartAction redirects the browser to Google's authorize URL.
@@ -118,7 +118,7 @@ func (a *API) GoogleOAuthStartAction(w http.ResponseWriter, r *http.Request) {
 		log.Error().
 			Err(err).
 			Msg("Failed to generate oauth state")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=google"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=google"), http.StatusFound)
 		return
 	}
 
@@ -149,7 +149,7 @@ func (a *API) GoogleOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 		log.Error().
 			Err(err).
 			Msg("Google oauth exchange failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=google"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=google"), http.StatusFound)
 		return
 	}
 
@@ -158,7 +158,7 @@ func (a *API) GoogleOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 		log.Error().
 			Err(err).
 			Msg("Google oauth user fetch failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=google"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=google"), http.StatusFound)
 		return
 	}
 
@@ -176,7 +176,7 @@ func (a *API) GoogleOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 		log.Error().
 			Err(err).
 			Msg("Google oauth login failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=google"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=google"), http.StatusFound)
 		return
 	}
 
@@ -190,7 +190,7 @@ func (a *API) GoogleOAuthCallbackAction(w http.ResponseWriter, r *http.Request) 
 			Msg("Failed to attach pending workspace invites")
 	}
 
-	http.Redirect(w, r, util.AppURL("/login?oauth=google"), http.StatusFound)
+	http.Redirect(w, r, util.AppURL("/admin/login?oauth=google"), http.StatusFound)
 }
 
 // FacebookOAuthStartAction redirects the browser to Facebook's authorize URL.
@@ -200,7 +200,7 @@ func (a *API) FacebookOAuthStartAction(w http.ResponseWriter, r *http.Request) {
 		log.Error().
 			Err(err).
 			Msg("Failed to generate oauth state")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=facebook"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=facebook"), http.StatusFound)
 		return
 	}
 
@@ -231,7 +231,7 @@ func (a *API) FacebookOAuthCallbackAction(w http.ResponseWriter, r *http.Request
 		log.Error().
 			Err(err).
 			Msg("Facebook oauth exchange failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=facebook"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=facebook"), http.StatusFound)
 		return
 	}
 
@@ -240,7 +240,7 @@ func (a *API) FacebookOAuthCallbackAction(w http.ResponseWriter, r *http.Request
 		log.Error().
 			Err(err).
 			Msg("Facebook oauth user fetch failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=facebook"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=facebook"), http.StatusFound)
 		return
 	}
 
@@ -258,7 +258,7 @@ func (a *API) FacebookOAuthCallbackAction(w http.ResponseWriter, r *http.Request
 		log.Error().
 			Err(err).
 			Msg("Facebook oauth login failed")
-		http.Redirect(w, r, util.AppURL("/login?oauth_error=facebook"), http.StatusFound)
+		http.Redirect(w, r, util.AppURL("/admin/login?oauth_error=facebook"), http.StatusFound)
 		return
 	}
 
@@ -272,5 +272,5 @@ func (a *API) FacebookOAuthCallbackAction(w http.ResponseWriter, r *http.Request
 			Msg("Failed to attach pending workspace invites")
 	}
 
-	http.Redirect(w, r, util.AppURL("/login?oauth=facebook"), http.StatusFound)
+	http.Redirect(w, r, util.AppURL("/admin/login?oauth=facebook"), http.StatusFound)
 }

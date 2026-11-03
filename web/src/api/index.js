@@ -25,7 +25,7 @@ api.interceptors.request.use((config) => {
 
 // Endpoints and pages where a 401 does not redirect to login
 const noRedirectUrls = ['public/action/logout']
-const publicPages = ['/', '/login', '/setup']
+const publicPages = ['/', '/admin/login', '/admin/setup']
 
 // Response interceptor
 api.interceptors.response.use(
@@ -36,11 +36,12 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !noRedirectUrls.includes(error.config?.url) &&
+      pathname.startsWith('/admin') &&
       !publicPages.includes(pathname)
     ) {
       removeUserFromStorage()
       removeWorkspaceFromStorage()
-      window.location.href = `/login?redirect=${encodeURIComponent(pathname + search)}`
+      window.location.href = `/admin/login?redirect=${encodeURIComponent(pathname + search)}`
     }
     return Promise.reject(error)
   }
