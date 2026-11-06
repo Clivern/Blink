@@ -3,14 +3,14 @@
     <h1 class="text-2xl font-extrabold">
       {{ mode === 'register' ? t('createAccount') : t('signIn') }}
     </h1>
-    <p class="mt-1 text-sm font-bold text-[#8a8a8a]">{{ t('profileNote') }}</p>
+    <p class="mt-1 text-sm font-bold text-[#87867f]">{{ t('profileNote') }}</p>
 
     <div class="mt-5 space-y-3">
       <button
         v-for="provider in providers"
         :key="provider.id"
         type="button"
-        class="flex w-full items-center justify-center gap-3 rounded-full border border-[#ececec] bg-white py-3 text-sm font-extrabold"
+        class="flex w-full items-center justify-center gap-3 rounded-full border border-[#e8e6dc] bg-[#faf9f5] py-3 text-sm font-extrabold"
         @click="signInWith(provider.id)"
       >
         <svg
@@ -59,7 +59,7 @@
       </button>
     </div>
 
-    <p class="mt-5 text-center text-xs font-extrabold tracking-wide text-[#9a9a9a] uppercase">
+    <p class="mt-5 text-center text-xs font-extrabold tracking-wide text-[#87867f] uppercase">
       {{ t('or') }}
     </p>
 
@@ -75,7 +75,7 @@
           required
           minlength="2"
           autocomplete="name"
-          class="mt-1.5 w-full rounded-2xl border border-[#ececec] bg-[#fafafa] px-4 py-3 font-bold outline-none focus:border-[#1c1c1c]"
+          class="mt-1.5 w-full rounded-2xl border border-[#e8e6dc] bg-[#f5f4ed] px-4 py-3 font-bold outline-none focus:border-[#141413]"
         />
       </label>
 
@@ -86,7 +86,7 @@
           required
           type="email"
           autocomplete="email"
-          class="mt-1.5 w-full rounded-2xl border border-[#ececec] bg-[#fafafa] px-4 py-3 font-bold outline-none focus:border-[#1c1c1c]"
+          class="mt-1.5 w-full rounded-2xl border border-[#e8e6dc] bg-[#f5f4ed] px-4 py-3 font-bold outline-none focus:border-[#141413]"
         />
       </label>
 
@@ -98,7 +98,7 @@
           type="tel"
           minlength="6"
           autocomplete="tel"
-          class="mt-1.5 w-full rounded-2xl border border-[#ececec] bg-[#fafafa] px-4 py-3 font-bold outline-none focus:border-[#1c1c1c]"
+          class="mt-1.5 w-full rounded-2xl border border-[#e8e6dc] bg-[#f5f4ed] px-4 py-3 font-bold outline-none focus:border-[#141413]"
         />
       </label>
 
@@ -110,13 +110,13 @@
           type="password"
           minlength="6"
           autocomplete="current-password"
-          class="mt-1.5 w-full rounded-2xl border border-[#ececec] bg-[#fafafa] px-4 py-3 font-bold outline-none focus:border-[#1c1c1c]"
+          class="mt-1.5 w-full rounded-2xl border border-[#e8e6dc] bg-[#f5f4ed] px-4 py-3 font-bold outline-none focus:border-[#141413]"
         />
       </label>
 
       <button
         type="submit"
-        class="w-full rounded-full bg-[#ff2f78] py-3.5 text-base font-extrabold text-white disabled:opacity-60"
+        class="w-full rounded-full bg-[#141413] py-3.5 text-base font-extrabold text-[#faf9f5] disabled:opacity-60"
         :disabled="saving"
       >
         {{ submitLabel }}
@@ -125,7 +125,7 @@
 
     <button
       type="button"
-      class="mt-4 text-sm font-extrabold text-[#ff2f78]"
+      class="mt-4 text-sm font-extrabold text-[#141413]"
       @click="mode = mode === 'register' ? 'signin' : 'register'"
     >
       {{ mode === 'register' ? t('haveAccount') : t('needAccount') }}

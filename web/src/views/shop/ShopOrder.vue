@@ -1,11 +1,11 @@
 <template>
   <div class="mx-auto max-w-lg px-4 pt-8 text-center md:pt-16">
     <p class="text-5xl">🛵</p>
-    <p class="mt-4 text-xs font-extrabold tracking-wide text-[#ff2f78] uppercase">
+    <p class="mt-4 text-xs font-extrabold tracking-wide text-[#141413] uppercase">
       {{ t('orderLabel', { id: order.id }) }}
     </p>
     <h1 class="mt-1 text-2xl font-extrabold">{{ t('onTheWay') }}</h1>
-    <p class="mt-2 text-sm font-bold text-[#6d6d6d]">
+    <p class="mt-2 text-sm font-bold text-[#5e5d59]">
       {{ t('orderLine', { window: order.window, address: order.address }) }}
     </p>
 
@@ -20,13 +20,13 @@
     <p class="mt-6 text-start text-lg font-extrabold">
       {{ t('totalAmount', { amount: euros(order.total) }) }}
     </p>
-    <p class="mt-1 text-start text-xs font-bold text-[#9a9a9a]">
+    <p class="mt-1 text-start text-xs font-bold text-[#87867f]">
       {{ t('savedDevice') }}
     </p>
 
     <router-link
       :to="{ name: 'ShopHome' }"
-      class="mt-6 flex w-full items-center justify-center rounded-full bg-[#1c1c1c] py-3.5 text-base font-extrabold text-white"
+      class="mt-6 flex w-full items-center justify-center rounded-full bg-[#141413] py-3.5 text-base font-extrabold text-[#faf9f5]"
     >
       {{ t('backToStore') }}
     </router-link>

@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="rounded-full border border-[#ececec] px-3 py-1 text-sm font-extrabold"
+    class="rounded-full border border-[#e8e6dc] px-3 py-1 text-sm font-extrabold"
     @click="setShopLocale(shopLocale === 'ar' ? 'en' : 'ar')"
   >
     {{ shopLocale === 'ar' ? 'EN' : 'عربي' }}

@@ -2,7 +2,7 @@
   <div class="px-4 pt-5 pb-6 md:mx-auto md:max-w-xl md:px-6 md:pt-8">
     <button
       type="button"
-      class="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f4f4]"
+      class="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5f4ed]"
       aria-label="Back"
       @click="router.back()"
     >
@@ -19,7 +19,7 @@
       </svg>
     </button>
     <h1 class="mt-3 text-2xl font-extrabold">{{ t('checkout') }}</h1>
-    <p class="mt-1 text-sm font-bold text-[#8a8a8a]">
+    <p class="mt-1 text-sm font-bold text-[#87867f]">
       {{ cart.count === 1 ? t('oneItem') : t('nItems', { n: cart.count }) }} · {{ t('arriving') }}
     </p>
 
@@ -35,7 +35,7 @@
           required
           minlength="2"
           autocomplete="name"
-          class="mt-1.5 w-full rounded-2xl border border-[#ececec] bg-[#fafafa] px-4 py-3 font-bold outline-none focus:border-[#1c1c1c]"
+          class="mt-1.5 w-full rounded-2xl border border-[#e8e6dc] bg-[#f5f4ed] px-4 py-3 font-bold outline-none focus:border-[#141413]"
         />
       </label>
 
@@ -47,7 +47,7 @@
           type="tel"
           minlength="6"
           autocomplete="tel"
-          class="mt-1.5 w-full rounded-2xl border border-[#ececec] bg-[#fafafa] px-4 py-3 font-bold outline-none focus:border-[#1c1c1c]"
+          class="mt-1.5 w-full rounded-2xl border border-[#e8e6dc] bg-[#f5f4ed] px-4 py-3 font-bold outline-none focus:border-[#141413]"
         />
       </label>
 
@@ -58,7 +58,7 @@
           required
           minlength="4"
           autocomplete="street-address"
-          class="mt-1.5 w-full rounded-2xl border border-[#ececec] bg-[#fafafa] px-4 py-3 font-bold outline-none focus:border-[#1c1c1c]"
+          class="mt-1.5 w-full rounded-2xl border border-[#e8e6dc] bg-[#f5f4ed] px-4 py-3 font-bold outline-none focus:border-[#141413]"
         />
       </label>
 
@@ -67,7 +67,7 @@
         <label
           v-for="option in windows"
           :key="option.id"
-          class="mt-2 flex items-center gap-3 rounded-2xl border border-[#ececec] px-4 py-3 font-bold"
+          class="mt-2 flex items-center gap-3 rounded-2xl border border-[#e8e6dc] px-4 py-3 font-bold"
         >
           <input v-model="windowChoice" type="radio" name="window" required :value="option.id" />
           {{ option.label }}
@@ -79,22 +79,22 @@
         <textarea
           v-model="note"
           rows="2"
-          class="mt-1.5 w-full rounded-2xl border border-[#ececec] bg-[#fafafa] px-4 py-3 font-bold outline-none focus:border-[#1c1c1c]"
+          class="mt-1.5 w-full rounded-2xl border border-[#e8e6dc] bg-[#f5f4ed] px-4 py-3 font-bold outline-none focus:border-[#141413]"
           :placeholder="t('notePlaceholder')"
         />
       </label>
 
       <div
-        class="fixed inset-x-0 bottom-[4.15rem] z-20 bg-white px-4 pt-3 pb-2 md:static md:mt-2 md:px-0"
+        class="fixed inset-x-0 bottom-[4.15rem] z-20 bg-[#faf9f5] px-4 pt-3 pb-2 md:static md:mt-2 md:px-0"
       >
         <button
           type="submit"
-          class="w-full rounded-full bg-[#ff2f78] py-3.5 text-base font-extrabold text-white disabled:opacity-60"
+          class="w-full rounded-full bg-[#141413] py-3.5 text-base font-extrabold text-[#faf9f5] disabled:opacity-60"
           :disabled="saving"
         >
           {{ saving ? t('placing') : t('placeOrder', { amount: euros(cart.total) }) }}
         </button>
-        <p class="mt-2 text-center text-[11px] font-bold text-[#9a9a9a]">
+        <p class="mt-2 text-center text-[11px] font-bold text-[#87867f]">
           {{ t('preview') }}
         </p>
       </div>

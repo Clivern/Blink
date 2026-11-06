@@ -1,11 +1,11 @@
 <template>
   <div>
     <header
-      class="sticky top-0 z-20 flex items-center gap-2 bg-white/95 px-3 py-3 backdrop-blur md:static md:px-6 md:pt-8"
+      class="sticky top-0 z-20 flex items-center gap-2 bg-[#faf9f5]/95 px-3 py-3 backdrop-blur md:static md:px-6 md:pt-8"
     >
       <button
         type="button"
-        class="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f4f4]"
+        class="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5f4ed]"
         aria-label="Back"
         @click="router.back()"
       >
@@ -25,7 +25,7 @@
         <router-link
           v-if="parent"
           :to="{ name: 'ShopCategory', params: { slug: parent.slug } }"
-          class="text-xs font-extrabold text-[#ff2f78]"
+          class="text-xs font-extrabold text-[#141413]"
         >
           {{ categoryLabel(parent) }}
         </router-link>
@@ -33,7 +33,7 @@
       </div>
     </header>
 
-    <p class="px-4 pb-3 text-sm font-bold text-[#8a8a8a] md:px-6">
+    <p class="px-4 pb-3 text-sm font-bold text-[#87867f] md:px-6">
       {{ productsLabel(items.length) }}
     </p>
 
@@ -45,7 +45,7 @@
         v-for="group in groups"
         :key="group.slug"
         :to="{ name: 'ShopCategory', params: { slug: group.slug } }"
-        class="flex shrink-0 items-center gap-2 rounded-2xl bg-[#f7f7f7] py-2 pr-4 pl-2"
+        class="flex shrink-0 items-center gap-2 rounded-2xl bg-[#f5f4ed] py-2 pr-4 pl-2"
       >
         <span
           class="flex h-9 w-9 items-center justify-center rounded-xl text-lg"
@@ -63,7 +63,7 @@
           <h2 class="text-lg font-extrabold">{{ categoryLabel(group) }}</h2>
           <router-link
             :to="{ name: 'ShopCategory', params: { slug: group.slug } }"
-            class="text-sm font-extrabold text-[#ff2f78]"
+            class="text-sm font-extrabold text-[#141413]"
           >
             {{ t('seeAll') }}
           </router-link>

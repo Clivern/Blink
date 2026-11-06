@@ -2,14 +2,14 @@
   <button
     v-if="qty === 0 && large"
     type="button"
-    class="w-full rounded-full bg-[#ff2f78] py-3.5 text-base font-extrabold text-white active:scale-[0.99]"
+    class="w-full rounded-full bg-[#141413] py-3.5 text-base font-extrabold text-[#faf9f5] active:scale-[0.99]"
     @click.stop="add"
   >
     {{ t('addToBasket') }}
   </button>
   <div
     v-else-if="large"
-    class="flex items-center justify-between rounded-full bg-[#1c1c1c] px-2 text-white"
+    class="flex items-center justify-between rounded-full bg-[#141413] px-2 text-[#faf9f5]"
   >
     <button
       type="button"
@@ -32,7 +32,7 @@
   <button
     v-else-if="qty === 0"
     type="button"
-    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1c1c1c] text-lg leading-none font-bold text-white"
+    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#141413] text-lg leading-none font-bold text-[#faf9f5]"
     :aria-label="`Add ${sku}`"
     @click.stop="add"
   >
@@ -40,7 +40,7 @@
   </button>
   <div
     v-else
-    class="flex h-8 shrink-0 items-center rounded-full bg-[#1c1c1c] text-white"
+    class="flex h-8 shrink-0 items-center rounded-full bg-[#141413] text-[#faf9f5]"
     @click.stop
   >
     <button

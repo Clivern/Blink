@@ -1,14 +1,14 @@
 <template>
   <div>
-    <header class="sticky top-0 z-20 bg-white px-4 pt-4 pb-3 md:static md:px-6 md:pt-8">
+    <header class="sticky top-0 z-20 bg-[#faf9f5] px-4 pt-4 pb-3 md:static md:px-6 md:pt-8">
       <form @submit.prevent>
-        <label class="flex items-center gap-2 rounded-2xl bg-[#f4f4f4] px-4 py-3">
+        <label class="flex items-center gap-2 rounded-2xl bg-[#f5f4ed] px-4 py-3">
           <svg
             width="18"
             height="18"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#8d8d8d"
+            stroke="#87867f"
             stroke-width="2.2"
           >
             <circle cx="11" cy="11" r="6.5" />
@@ -19,18 +19,18 @@
             type="search"
             autofocus
             :placeholder="t('searchStore')"
-            class="w-full bg-transparent text-base font-bold outline-none placeholder:text-[#a3a3a3]"
+            class="w-full bg-transparent text-base font-bold outline-none placeholder:text-[#87867f]"
           />
         </label>
       </form>
     </header>
 
-    <p v-if="!query.trim()" class="px-4 pt-2 text-sm font-bold text-[#8a8a8a] md:px-6">
+    <p v-if="!query.trim()" class="px-4 pt-2 text-sm font-bold text-[#87867f] md:px-6">
       {{ t('searchHint') }}
     </p>
     <p
       v-else-if="results.length === 0"
-      class="px-4 pt-6 text-center text-sm font-bold text-[#8a8a8a] md:px-6"
+      class="px-4 pt-6 text-center text-sm font-bold text-[#87867f] md:px-6"
     >
       {{ t('noMatch', { query: query.trim() }) }}
     </p>

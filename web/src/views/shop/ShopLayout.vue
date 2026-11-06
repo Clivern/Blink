@@ -1,18 +1,18 @@
 <template>
-  <div class="shop-root min-h-screen bg-white" :dir="shopLocale === 'ar' ? 'rtl' : 'ltr'">
+  <div class="shop-root min-h-screen bg-[#faf9f5]" :dir="shopLocale === 'ar' ? 'rtl' : 'ltr'">
     <header
-      class="sticky top-0 z-30 hidden border-b border-[#f0f0f0] bg-white/95 backdrop-blur md:block"
+      class="sticky top-0 z-30 hidden border-b border-[#e8e6dc] bg-[#faf9f5]/95 backdrop-blur md:block"
     >
       <div class="mx-auto flex h-16 max-w-6xl items-center gap-6 px-6">
         <router-link
           :to="{ name: 'ShopHome' }"
-          class="text-2xl leading-none font-extrabold tracking-tight text-[#ff2f78]"
+          class="text-2xl leading-none font-extrabold tracking-tight text-[#141413]"
         >
           blink
         </router-link>
         <router-link
           :to="{ name: 'ShopSearch' }"
-          class="flex max-w-md flex-1 items-center gap-2 rounded-2xl bg-[#f4f4f4] px-4 py-2.5 text-sm font-bold text-[#8d8d8d]"
+          class="flex max-w-md flex-1 items-center gap-2 rounded-2xl bg-[#f5f4ed] px-4 py-2.5 text-sm font-bold text-[#87867f]"
         >
           <svg
             width="18"
@@ -27,7 +27,7 @@
           </svg>
           {{ t('searchPlaceholder') }}
         </router-link>
-        <span class="rounded-full bg-[#ffe4ef] px-3 py-1 text-sm font-extrabold text-[#ff2f78]">
+        <span class="rounded-full bg-[#f5f4ed] px-3 py-1 text-sm font-extrabold text-[#141413]">
           {{ t('eta') }}
         </span>
         <LocaleSwitch />
@@ -37,12 +37,12 @@
             :key="tab.name"
             :to="{ name: tab.name }"
             class="relative flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-extrabold"
-            :class="isActive(tab) ? 'bg-[#ffe4ef] text-[#ff2f78]' : 'text-[#5c5c5c]'"
+            :class="isActive(tab) ? 'bg-[#f5f4ed] text-[#141413]' : 'text-[#5e5d59]'"
           >
             {{ tab.label }}
             <span
               v-if="tab.name === 'ShopCart' && cart.count"
-              class="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#ff2f78] px-1 text-[11px] font-extrabold text-white"
+              class="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#141413] px-1 text-[11px] font-extrabold text-[#faf9f5]"
             >
               {{ cart.count }}
             </span>
@@ -59,11 +59,11 @@
         <router-view />
       </main>
 
-      <footer class="mt-16 border-t border-[#f0f0f0] px-4 pt-10 pb-40 md:px-6 md:pb-12">
+      <footer class="mt-16 border-t border-[#e8e6dc] px-4 pt-10 pb-40 md:px-6 md:pb-12">
         <div class="grid gap-8 sm:grid-cols-3">
           <div>
-            <p class="text-2xl font-extrabold tracking-tight text-[#ff2f78]">blink</p>
-            <p class="mt-2 max-w-xs text-sm font-bold text-[#6d6d6d]">
+            <p class="text-2xl font-extrabold tracking-tight text-[#141413]">blink</p>
+            <p class="mt-2 max-w-xs text-sm font-bold text-[#5e5d59]">
               {{ t('tagline') }}
             </p>
           </div>
@@ -73,7 +73,7 @@
               <li v-for="page in companyPages" :key="page.slug">
                 <router-link
                   :to="{ name: 'ShopPage', params: { slug: page.slug } }"
-                  class="text-sm font-bold text-[#5c5c5c]"
+                  class="text-sm font-bold text-[#5e5d59]"
                 >
                   {{ localizePage(page).title }}
                 </router-link>
@@ -86,7 +86,7 @@
               <li v-for="page in legalPages" :key="page.slug">
                 <router-link
                   :to="{ name: 'ShopPage', params: { slug: page.slug } }"
-                  class="text-sm font-bold text-[#5c5c5c]"
+                  class="text-sm font-bold text-[#5e5d59]"
                 >
                   {{ localizePage(page).title }}
                 </router-link>
@@ -94,17 +94,17 @@
             </ul>
           </div>
         </div>
-        <p class="mt-10 text-xs font-bold text-[#9a9a9a]">{{ t('rights') }}</p>
+        <p class="mt-10 text-xs font-bold text-[#87867f]">{{ t('rights') }}</p>
       </footer>
     </div>
 
     <router-link
       v-if="cart.count && showBasket"
       :to="{ name: 'ShopCart' }"
-      class="fixed bottom-[4.5rem] left-4 right-4 z-30 flex items-center gap-3 rounded-full bg-[#1c1c1c] px-4 py-3 text-white shadow-lg md:hidden"
+      class="fixed bottom-[4.5rem] left-4 right-4 z-30 flex items-center gap-3 rounded-full bg-[#141413] px-4 py-3 text-[#faf9f5] shadow-lg md:hidden"
     >
       <span
-        class="flex h-7 min-w-7 items-center justify-center rounded-full bg-[#ff2f78] px-1.5 text-sm font-extrabold"
+        class="flex h-7 min-w-7 items-center justify-center rounded-full bg-[#faf9f5] px-1.5 text-sm font-extrabold text-[#141413]"
       >
         {{ cart.count }}
       </span>
@@ -113,14 +113,14 @@
     </router-link>
 
     <nav
-      class="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-[#f0f0f0] bg-white px-2 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] md:hidden"
+      class="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-[#e8e6dc] bg-[#faf9f5] px-2 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] md:hidden"
     >
       <router-link
         v-for="tab in tabs"
         :key="tab.name"
         :to="{ name: tab.name }"
         class="relative flex w-16 flex-col items-center gap-0.5 text-[11px] font-bold"
-        :class="isActive(tab) ? 'text-[#ff2f78]' : 'text-[#8a8a8a]'"
+        :class="isActive(tab) ? 'text-[#141413]' : 'text-[#87867f]'"
       >
         <svg
           v-if="tab.name === 'ShopHome'"
@@ -173,7 +173,7 @@
         <span>{{ tab.label }}</span>
         <span
           v-if="tab.name === 'ShopCart' && cart.count"
-          class="absolute top-0 end-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ff2f78] px-1 text-[10px] font-extrabold text-white"
+          class="absolute top-0 end-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#141413] px-1 text-[10px] font-extrabold text-[#faf9f5]"
         >
           {{ cart.count }}
         </span>
@@ -241,8 +241,8 @@ watch(
 
 .shop-root {
   font-family: 'Nunito', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  color: #1c1c1c;
-  background: #fff;
+  color: #141413;
+  background: #faf9f5;
 }
 
 .shop-root[dir='rtl'] {

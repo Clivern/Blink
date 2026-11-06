@@ -7,7 +7,7 @@
     >
       <span
         v-if="product.wasCents"
-        class="absolute top-2 start-2 rounded-full bg-[#ff2f78] px-2 py-0.5 text-[11px] font-extrabold text-white"
+        class="absolute top-2 start-2 rounded-full bg-[#141413] px-2 py-0.5 text-[11px] font-extrabold text-[#faf9f5]"
       >
         {{ t('deal') }}
       </span>
@@ -15,10 +15,10 @@
     </router-link>
     <div class="mt-2 flex items-start justify-between gap-2">
       <div>
-        <p class="text-[15px] leading-none font-extrabold text-[#1c1c1c]">
+        <p class="text-[15px] leading-none font-extrabold text-[#141413]">
           {{ euros(product.cents) }}
         </p>
-        <p v-if="product.wasCents" class="mt-1 text-xs text-[#9a9a9a] line-through">
+        <p v-if="product.wasCents" class="mt-1 text-xs text-[#87867f] line-through">
           {{ euros(product.wasCents) }}
         </p>
       </div>
@@ -26,11 +26,11 @@
     </div>
     <router-link
       :to="{ name: 'ShopProduct', params: { sku: product.sku } }"
-      class="mt-1.5 text-sm leading-tight font-bold text-[#1c1c1c]"
+      class="mt-1.5 text-sm leading-tight font-bold text-[#141413]"
     >
       {{ localizeProduct(product).name }}
     </router-link>
-    <p class="mt-0.5 text-xs text-[#8a8a8a]">{{ localizeProduct(product).pack }}</p>
+    <p class="mt-0.5 text-xs text-[#87867f]">{{ localizeProduct(product).pack }}</p>
   </article>
 </template>
 

@@ -1,9 +1,9 @@
 <template>
   <div>
-    <header class="sticky top-0 z-20 bg-white/95 px-3 py-3 backdrop-blur md:static md:px-6 md:pt-6">
+    <header class="sticky top-0 z-20 bg-[#faf9f5]/95 px-3 py-3 backdrop-blur md:static md:px-6 md:pt-6">
       <button
         type="button"
-        class="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f4f4]"
+        class="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5f4ed]"
         aria-label="Back"
         @click="router.back()"
       >
@@ -31,31 +31,31 @@
 
       <div>
         <div class="px-4 pt-5 pb-4 lg:px-0 lg:pt-2">
-          <p class="text-sm font-extrabold text-[#ff2f78]">{{ shown.brand }}</p>
+          <p class="text-sm font-extrabold text-[#141413]">{{ shown.brand }}</p>
           <h1 class="mt-1 text-2xl font-extrabold">{{ shown.name }}</h1>
-          <p class="mt-1 text-sm font-bold text-[#8a8a8a]">
+          <p class="mt-1 text-sm font-bold text-[#87867f]">
             {{ shown.pack }} · {{ shown.unitPrice }}
           </p>
           <div class="mt-3 flex items-baseline gap-2">
             <p class="text-2xl font-extrabold">{{ euros(product.cents) }}</p>
-            <p v-if="product.wasCents" class="text-sm font-bold text-[#9a9a9a] line-through">
+            <p v-if="product.wasCents" class="text-sm font-bold text-[#87867f] line-through">
               {{ euros(product.wasCents) }}
             </p>
           </div>
-          <p class="mt-4 text-[15px] leading-relaxed font-semibold text-[#3a3a3a]">
+          <p class="mt-4 text-[15px] leading-relaxed font-semibold text-[#30302e]">
             {{ shown.blurb }}
           </p>
           <div class="mt-4 flex flex-wrap gap-2">
             <router-link
               v-if="parent"
               :to="{ name: 'ShopCategory', params: { slug: parent.slug } }"
-              class="inline-flex rounded-full bg-[#f4f4f4] px-3 py-1.5 text-sm font-extrabold"
+              class="inline-flex rounded-full bg-[#f5f4ed] px-3 py-1.5 text-sm font-extrabold"
             >
               {{ categoryLabel(parent) }}
             </router-link>
             <router-link
               :to="{ name: 'ShopCategory', params: { slug: product.category } }"
-              class="inline-flex rounded-full bg-[#f4f4f4] px-3 py-1.5 text-sm font-extrabold"
+              class="inline-flex rounded-full bg-[#f5f4ed] px-3 py-1.5 text-sm font-extrabold"
             >
               {{ categoryLabel(category) }}
             </router-link>

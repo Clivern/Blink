@@ -5,12 +5,12 @@
     <div v-if="cart.detailed.length === 0" class="px-6 pt-16 text-center">
       <p class="text-5xl">🧺</p>
       <p class="mt-4 text-lg font-extrabold">{{ t('emptyTitle') }}</p>
-      <p class="mt-1 text-sm font-bold text-[#8a8a8a]">
+      <p class="mt-1 text-sm font-bold text-[#87867f]">
         {{ t('emptyBody') }}
       </p>
       <router-link
         :to="{ name: 'ShopHome' }"
-        class="mt-6 inline-flex rounded-full bg-[#ff2f78] px-5 py-3 text-sm font-extrabold text-white"
+        class="mt-6 inline-flex rounded-full bg-[#141413] px-5 py-3 text-sm font-extrabold text-[#faf9f5]"
       >
         {{ t('startShopping') }}
       </router-link>
@@ -24,12 +24,12 @@
         >
           <template v-if="remaining === 0">{{ t('freeUnlocked') }}</template>
           <template v-else>{{ t('addForFree', { amount: euros(remaining) }) }}</template>
-          <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-white/70">
+          <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-[#faf9f5]/70">
             <div class="h-full rounded-full bg-current" :style="{ width: `${progress}%` }" />
           </div>
         </div>
 
-        <ul class="mt-4 divide-y divide-[#f2f2f2]">
+        <ul class="mt-4 divide-y divide-[#e8e6dc]">
           <li v-for="line in cart.detailed" :key="line.sku" class="flex items-center gap-3 py-3">
             <router-link
               :to="{ name: 'ShopProduct', params: { sku: line.sku } }"
@@ -40,7 +40,7 @@
             </router-link>
             <div class="min-w-0 flex-1">
               <p class="truncate font-extrabold">{{ localizeProduct(line.product).name }}</p>
-              <p class="text-xs font-bold text-[#8a8a8a]">
+              <p class="text-xs font-bold text-[#87867f]">
                 {{ localizeProduct(line.product).pack }}
               </p>
               <p class="mt-1 text-sm font-extrabold">{{ euros(line.product.cents * line.qty) }}</p>
@@ -51,15 +51,15 @@
       </div>
 
       <aside
-        class="mt-4 lg:sticky lg:top-24 lg:mt-0 lg:rounded-3xl lg:border lg:border-[#f0f0f0] lg:p-5"
+        class="mt-4 lg:sticky lg:top-24 lg:mt-0 lg:rounded-3xl lg:border lg:border-[#e8e6dc] lg:p-5"
       >
         <dl class="space-y-2 text-sm font-bold lg:mt-0">
           <div class="flex justify-between">
-            <dt class="text-[#6d6d6d]">{{ t('subtotal') }}</dt>
+            <dt class="text-[#5e5d59]">{{ t('subtotal') }}</dt>
             <dd>{{ euros(cart.subtotal) }}</dd>
           </div>
           <div class="flex justify-between">
-            <dt class="text-[#6d6d6d]">{{ t('delivery') }}</dt>
+            <dt class="text-[#5e5d59]">{{ t('delivery') }}</dt>
             <dd>{{ cart.delivery === 0 ? t('free') : euros(cart.delivery) }}</dd>
           </div>
           <div class="flex justify-between pt-2 text-base font-extrabold">
@@ -70,7 +70,7 @@
 
         <router-link
           :to="{ name: 'ShopCheckout' }"
-          class="mt-5 flex w-full items-center justify-center rounded-full bg-[#ff2f78] py-3.5 text-base font-extrabold text-white"
+          class="mt-5 flex w-full items-center justify-center rounded-full bg-[#141413] py-3.5 text-base font-extrabold text-[#faf9f5]"
         >
           {{ t('checkoutCta', { amount: euros(cart.total) }) }}
         </router-link>
